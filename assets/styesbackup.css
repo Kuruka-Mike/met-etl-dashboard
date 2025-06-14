@@ -1,0 +1,178 @@
+/* General Page Styles */
+body, .content {
+    background-color: #252525; /* background_content */
+    color: #F5F5F5; /* text color */
+    font-family: Oswald, sans-serif; /* Using Oswald as the main font family */
+    font-size: 17px; /* general font size */
+}
+
+/* Header Styles */
+.header {
+    background-color: #BFbfbf; /* header_background_color */
+    color: #FFFFFF; /* trendline_logo_white */
+    font-size: 30px; /* font_size_header */
+    padding: 0px; /* header_padding */
+    margin-bottom: 15px; /* header_margin */
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.24); /* header_box_shadow */
+}
+
+/* Card Styles */
+.card {
+    background-color: #252525; /* card_background_color */
+    color: #FFFFFF; /* Using white for text inside cards */
+    margin: 15px; /* card_margin */
+    padding: 5px; /* card_padding */
+    border: solid 0px #FFFFFF; /* card_outline */
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.12), 0px 1px 2px rgba(0,0,0,0.24); /* card_box_shadow */
+    border-radius: 4px; /* From card_border radius */
+}
+
+.card-header {
+    background-color: transparent; /* card_header_background_color */
+    color: #6A6A6A; /* from card_header_border color */
+    padding: 10px; /* card_header_padding */
+    border-bottom: 1px solid #6A6A6A; /* card_header_border */
+}
+
+/* Custom button styles */
+.btn-custom-primary {
+    margin-top: 5px;
+    background-color: transparent; /* Use the accent color defined in :root */
+    color: white;
+    border-color: var(--border-color); /* Keep border color consistent with background */
+}
+
+.btn-custom-secondary {
+    background-color: var(--trendline-logo-blue); /* A specific blue color */
+    color: white;
+    border-color: var(--trendline-logo-blue);
+}
+
+.btn-custom-primary:hover, .btn-custom-primary:focus {
+    background-color: darken(var(--accent-color), 10%);
+    border-color: darken(var(--accent-color), 10%);
+}
+
+.btn-custom-secondary:hover, .btn-custom-secondary:focus {
+    background-color: darken(var(--trendline-logo-blue), 10%);
+    border-color: darken(var(--trendline-logo-blue), 10%);
+}
+
+/* Colorway and Colorscale for Plots (This would be used in plotly configurations) */
+:root {
+    --accent-color: #F0936C;
+    --negative-color: #ff2c6d;
+    --positive-color: #989898;
+    --background-page: #1c1c1e;
+    --border-color: rgb(255,255,255);
+    --trendline-logo-blue: #02497D;
+}
+
+/* Custom modal styles */
+.modal-content {
+    background-color: #252525; /* Use the dark theme background */
+    color: white; /* Text color for content inside modals */
+    border-color: var(--border-color); /* Consistent border color */
+    border-width: 2px; /* Optional: adjust border width if needed */
+}
+
+.modal-header, .modal-body, .modal-footer {
+    border-bottom: 1px solid var(--border-color); /* Subtle borders inside the modal */
+}
+
+.modal-header {
+    background-color: transparent; /* Same as button background for consistency */
+    color: white; /* Ensuring text is visible */
+}
+
+.modal-footer {
+    background-color: transparent; /* Keep footer consistent with header */
+    border-top: 1px solid var(--border-color); /* Consistent border style */
+}
+
+/* Modal button styles - override button styles specific to modals */
+.modal-button {
+    background-color: transparent; /* Background color for buttons in modals */
+    color: white; /* Text color */
+    border-color: var(--border-color); /* Border color */
+    margin-top: 5px; /* Space above the button */
+}
+
+/* Hover effect for modal buttons */
+.modal-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Slight highlight on hover */
+    color: white;
+}
+
+/* Styling for the columns in the modal */
+.modal-column {
+    border: 1px solid lightgrey;
+    margin: 10px;
+    padding: 10px;
+    display: none; /* Start with hidden and show based on selection */
+}
+
+.modal-column-title {
+    padding: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Make the first column always visible */
+.modal-column-first {
+    display: block;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    margin-top: -30px; /* Adjust this value as needed to move the sidebar up */
+}
+
+/* Resets for any specific dropdown component styles to ensure our styles apply correctly */
+.Select-control, .Select-value, .Select-placeholder, .Select-menu-outer, .VirtualizedSelectOption, .dropdown-toggle {
+    margin-bottom: 5px;
+    background-color: #333; /* Dark background uniformly */
+    color: white; /* Ensuring text is white in all states */
+    border: none; /* Removing borders */
+}
+
+/* Specific styling for when options are hovered over or focused */
+.Select-control:hover, .Select--single.is-focused > .Select-control, .VirtualizedSelectOption--is-focused {
+    background-color: #444; /* Slightly lighter for hover and focus states */
+}
+
+/* Styling for selected option to ensure visibility */
+.VirtualizedSelectOption--is-selected {
+    background-color: #555; /* Differentiation for selected option */
+}
+
+/* Additional styles to ensure the text in any part of the dropdown is visible */
+.Select-value-label, .dropdown-item {
+    color: white; /* White text for all labels and items */
+}
+
+/* React-select and Dash core components often use inline styles; using !important might be necessary */
+.Select--single > .Select-control .Select-value, .Select-placeholder, .Select-value-label, .dropdown-item {
+    color: white !important; /* Forcing white text to handle inline styles */
+}
+
+/* Report Styles */
+.report-content {
+    background-color: #FAFBFC; /* report_background_content */
+    color: rgb(15, 15, 15); /* report_text */
+    font-size: 14px; /* report_font_size */
+}
+
+/* Responsive Design */
+@media (max-width: 1300px) {
+    body {
+        font-size: 13px; /* font_size_smaller_screen */
+    }
+}
+
+/* Apply specific font styles for headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: Oswald, sans-serif; /* font_family_headings */
+    color: #DFE3EC; /* trendline_logo_blue3 */
+}
