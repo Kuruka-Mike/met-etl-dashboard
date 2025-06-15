@@ -103,7 +103,7 @@ def create_step3_layout():
                                         config={'displayModeBar': False}, # Hide mode bar for cleaner look
                                         figure=go.Figure(
                                             layout=go.Layout(
-                                                mapbox_style="dark",
+                                                mapbox_style="streets",  # Show US with roads/labels on load
                                                 mapbox_accesstoken=MAPBOX_API_KEY,
                                                 mapbox_center={"lat": 39.8283, "lon": -98.5795}, # US Center
                                                 mapbox_zoom=3,
@@ -148,7 +148,7 @@ def update_map_on_lat_lon_change(latitude, longitude, current_figure):
             if -90 <= lat_val <= 90 and -180 <= lon_val <= 180:
                 map_center_lat = lat_val
                 map_center_lon = lon_val
-                map_zoom = 10  # Zoom in when coordinates are valid
+                map_zoom = 7  # Zoomed out more to show roads/labels
                 markers = [go.Scattermapbox(
                     lat=[lat_val],
                     lon=[lon_val],
@@ -164,7 +164,7 @@ def update_map_on_lat_lon_change(latitude, longitude, current_figure):
             pass # Keep default view if conversion fails
 
     layout = go.Layout(
-        mapbox_style="dark",
+        mapbox_style="streets",  # Use "streets" for more road/label detail
         mapbox_accesstoken=MAPBOX_API_KEY,
         mapbox_center={"lat": map_center_lat, "lon": map_center_lon},
         mapbox_zoom=map_zoom,

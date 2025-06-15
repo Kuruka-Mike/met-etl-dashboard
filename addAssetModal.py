@@ -21,7 +21,7 @@ def create_add_asset_modal():
     return dmc.Modal(
         title="Asset Configuration Wizard",
         id="modern-add-asset-modal",
-        size="lg",
+        size="50vw",
         centered=True,
         overlayBlur=2,
         opened=False,
@@ -29,85 +29,81 @@ def create_add_asset_modal():
             html.Div(
                 style={"position": "relative"},
                 children=[
-                    # Loading overlay that appears on top when needed
-                    dmc.LoadingOverlay(
-                        id="wizard-loading-overlay",
-                        loaderProps={"type": "bars", "color": "blue", "size": "lg"},
-                        radius="sm",
-                        overlayBlur=2,
-                        style={"display": "none", "position": "absolute", "top": 0, "left": 0, "right": 0, "bottom": 0},
-                        zIndex=1000,
-                        children=[]  # Empty children since this is just the overlay
-                    ),
-                    # Main wizard content that's always visible
-                    dmc.Stack(
-                        spacing="md",
+                    # Main wizard content wrapped in a loading spinner
+                    dcc.Loading(
+                        type="default",
+                        color="blue",
                         children=[
-                            dmc.Stepper(
-                                id="asset-wizard-stepper",
-                                active=0,
-                                breakpoint="sm",
+                            dmc.Stack(
+                                spacing="md",
                                 children=[
-                                    dmc.StepperStep(
-                                        label="Basic Information",
-                                        description="Create the asset record",
-                                        children=[create_step1_layout()]
-                                    ),
-                                    dmc.StepperStep(
-                                        label="Project Configuration",
-                                        description="Configure project asset details",
-                                        children=[create_step2_layout()]
-                                    ),
-                                    dmc.StepperStep(
-                                        label="Location Details",
-                                        description="Add geographic coordinates",
-                                        children=[create_step3_layout()]
-                                    ),
-                                    dmc.StepperStep( # New Step 4
-                                        label="Ingest Configuration",
-                                        description="Setup data ingest parameters",
-                                        children=[create_step4_layout()]
-                                    )
-                                ]
-                            ),
-                            dmc.Group(
-                                position="apart",
-                                mt="xl",
-                                children=[
-                                    dmc.Button(
-                                        "Cancel",
-                                        id="modern-cancel-asset-btn",
-                                        variant="outline",
-                                        color="gray"
+                                    dmc.Stepper(
+                                        id="asset-wizard-stepper",
+                                        active=0,
+                                        breakpoint="sm",
+                                        children=[
+                                            dmc.StepperStep(
+                                                label="Basic Information",
+                                                description="Create the asset record",
+                                                children=[create_step1_layout()]
+                                            ),
+                                            dmc.StepperStep(
+                                                label="Project Configuration",
+                                                description="Configure project asset details",
+                                                children=[create_step2_layout()]
+                                            ),
+                                            dmc.StepperStep(
+                                                label="Location Details",
+                                                description="Add geographic coordinates",
+                                                children=[create_step3_layout()]
+                                            ),
+                                            dmc.StepperStep( # New Step 4
+                                                label="Ingest Configuration",
+                                                description="Setup data ingest parameters",
+                                                children=[create_step4_layout()]
+                                            )
+                                        ]
                                     ),
                                     dmc.Group(
-                                        spacing="sm",
+                                        position="apart",
+                                        mt="xl",
                                         children=[
                                             dmc.Button(
-                                                "Previous",
-                                                id="wizard-prev-btn",
+                                                "Cancel",
+                                                id="modern-cancel-asset-btn",
                                                 variant="outline",
-                                                style={"display": "none"}
+                                                color="gray"
                                             ),
-                                            dmc.Button(
-                                                "Next",
-                                                id="wizard-next-btn",
-                                                color="blue",
-                                                loading=False # This loading is for the button itself, not the overlay
-                                            ),
-                                            dmc.Button(
-                                                "Complete",
-                                                id="wizard-complete-btn",
-                                                color="green",
-                                                style={"display": "none"},
-                                                loading=False # This loading is for the button itself
+                                            dmc.Group(
+                                                spacing="sm",
+                                                children=[
+                                                    dmc.Button(
+                                                        "Previous",
+                                                        id="wizard-prev-btn",
+                                                        variant="outline",
+                                                        style={"display": "none"}
+                                                    ),
+                                                    dmc.Button(
+                                                        "Next",
+                                                        id="wizard-next-btn",
+                                                        color="blue",
+                                                        loading=False # This loading is for the button itself, not the overlay
+                                                    ),
+                                                    dmc.Button(
+                                                        "Complete",
+                                                        id="wizard-complete-btn",
+                                                        color="green",
+                                                        style={"display": "none"},
+                                                        loading=False # This loading is for the button itself
+                                                    )
+                                                ]
                                             )
                                         ]
                                     )
                                 ]
-                            )
+                            ) # End of main wizard Stack
                         ]
-                    ) # End of main wizard Stack
+                    ),
                 ] # End of html.Div children
             ), # End of html.Div
             # Stores are outside the LoadingOverlay
@@ -144,7 +140,6 @@ def load_client_data_on_modal_open(is_opened):
         Output("add-asset-notification-store", "data", allow_duplicate=True),
         Output("notification-log-store", "data", allow_duplicate=True),
         Output("assets-dashboard-refresh-trigger", "data", allow_duplicate=True),
-        Output("wizard-loading-overlay", "style", allow_duplicate=True) # Changed to style
     ],
     [
         Input("quick-add-asset-btn", "n_clicks"),
@@ -180,26 +175,22 @@ def toggle_add_asset_modal(
     sender, dropbox_path, gmail_folder_id, email_text, logger_site_number, 
     show_logger, show_email, altosphere_path, # Step 4 states
     step_data, asset_info, log_data, refresh_trigger, current_step_on_complete):
-    
-    loading_style = {"display": "none"} # Default loading state for most paths
 
     if ctx.triggered_id == "quick-add-asset-btn" and open_btn and open_btn > 0:
         print("DEBUG: Opening modal, resetting to Step 1")
-        # Returns: modal_opened, active_step, wizard_data, asset_info, notification, log_data, refresh_trigger, loading_overlay_style
-        return True, 0, {}, {}, {}, log_data or [], refresh_trigger, {"display": "none"}
+        return True, 0, {}, {}, {}, log_data or [], refresh_trigger
 
     elif ctx.triggered_id == "wizard-complete-btn" and complete_btn:
         print(f"DEBUG: Processing wizard completion from Step {current_step_on_complete + 1}")
-        
         project_asset_id = step_data.get("project_asset_id")
         if not project_asset_id: 
             notification = {"title": "Error", "message": "Project Asset ID missing. Cannot complete.", "color": "red", "icon": "❌"}
-            return is_open, current_step_on_complete, step_data, asset_info, notification, log_data or [], refresh_trigger, {"display": "none"}
+            return is_open, current_step_on_complete, step_data, asset_info, notification, log_data or [], refresh_trigger
 
         is_valid, error_msg = validate_step4_data(sender, dropbox_path, gmail_folder_id, email_text, logger_site_number, show_logger, show_email, altosphere_path)
         if not is_valid:
             notification = {"title": "Validation Error (Step 4)", "message": error_msg, "color": "yellow", "icon": "⚠️"}
-            return is_open, 3, step_data, asset_info, notification, log_data or [], refresh_trigger, {"display": "none"}
+            return is_open, 3, step_data, asset_info, notification, log_data or [], refresh_trigger
 
         notification_out, log_entry, error = process_step4_completion(
             sender, dropbox_path, gmail_folder_id, email_text, logger_site_number, 
@@ -208,16 +199,16 @@ def toggle_add_asset_modal(
         updated_log = (log_data or []) + [log_entry]
 
         if error:
-            return is_open, 3, step_data, asset_info, notification_out, updated_log, refresh_trigger, {"display": "none"}
+            return is_open, 3, step_data, asset_info, notification_out, updated_log, refresh_trigger
         else:
-            return False, 0, {}, {}, notification_out, updated_log, (refresh_trigger or 0) + 1, {"display": "none"}
-            
+            return False, 0, {}, {}, notification_out, updated_log, (refresh_trigger or 0) + 1
+
     elif ctx.triggered_id == "modern-cancel-asset-btn":
         print("DEBUG: Closing modal, resetting wizard")
-        return False, 0, {}, {}, {}, log_data or [], refresh_trigger, {"display": "none"}
-        
+        return False, 0, {}, {}, {}, log_data or [], refresh_trigger
+
     # Default return for other cases (e.g., modal just being present without action)
-    return is_open, current_step_on_complete if current_step_on_complete is not None else 0, step_data, asset_info, {}, log_data or [], refresh_trigger, {"display": "none"}
+    return is_open, current_step_on_complete if current_step_on_complete is not None else 0, step_data, asset_info, {}, log_data or [], refresh_trigger
 
 # Wizard navigation callback
 @callback(
@@ -234,8 +225,7 @@ def toggle_add_asset_modal(
         Output("step2-asset-name-display", "value"),
         Output("step2-asset-type-display", "value"),
         Output("step2-asset-id-display", "value"),
-        Output("met-tower-pairing-section", "style"),
-        Output("wizard-loading-overlay", "style", allow_duplicate=True) # Changed to style
+        Output("met-tower-pairing-section", "style")
     ],
     [
         Input("wizard-next-btn", "n_clicks"),
@@ -266,11 +256,12 @@ def handle_wizard_navigation(
     s3_latitude, s3_longitude, s3_elevation # Step 3 values
     ):
     print(f"DEBUG: Wizard navigation triggered. Current step: {current_step}, Triggered by: {ctx.triggered_id}")
-    
-    loading_style_output = {"display": "none"} # Default to hidden
+
+    # Show loading overlay if loading_state is True
+    loading_style_output = {"display": "none"}
 
     if not ctx.triggered:
-        return current_step, {"display": "none"}, {}, {"display": "none"}, step_data, asset_info, {}, [], "", "", "", "", {"display": "none"}, {"display": "none"}
+        return current_step, {"display": "none"}, {}, {"display": "none"}, step_data, asset_info, {}, [], "", "", "", "", {"display": "none"}
     
     notification = {}
     
@@ -284,7 +275,7 @@ def handle_wizard_navigation(
                     "color": "yellow",
                     "icon": "⚠️"
                 }
-                return current_step, {"display": "none"}, {}, {"display": "none"}, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}, {"display": "none"}
+                return current_step, {"display": "none"}, {}, {"display": "none"}, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}
             
             try:
                 print(f"DEBUG: Creating asset from wizard: {asset_name}, type: {asset_type_id}")
@@ -309,7 +300,7 @@ def handle_wizard_navigation(
                 return (
                     new_step, {}, next_style_conditional, {"display": "none"}, step_data, asset_info, notification,
                     project_options, project_name, asset_name, f"Asset Type {asset_type_id}", str(new_asset_id),
-                    pairing_style, {"display": "none"}
+                    pairing_style
                 )
             except Exception as e:
                 print(f"DEBUG: Error creating asset: {e}")
@@ -319,7 +310,7 @@ def handle_wizard_navigation(
                     "color": "red",
                     "icon": "❌"
                 }
-                return current_step, {"display": "none"}, {}, {"display": "none"}, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}, {"display": "none"}
+                return current_step, {"display": "none"}, {}, {"display": "none"}, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}
         
         elif current_step == 1:  # Moving from Step 2 to Step 3
             is_valid, error_msg = validate_step2_data(step2_project_name, asset_info)
@@ -346,14 +337,14 @@ def handle_wizard_navigation(
             new_step = 2
             return (
                 new_step, {}, {"display": "none"}, {}, step_data, asset_info, {},
-                [], "", "", "", "", {"display": "none"}, {"display": "none"}
+                [], "", "", "", "", {"display": "none"}
             )
         elif current_step == 2: # Moving from Step 3 to Step 4
             print("DEBUG: Validating and processing Step 3 data before moving to Step 4.")
             is_valid_s3, error_msg_s3 = validate_step3_data(s3_latitude, s3_longitude, s3_elevation)
             if not is_valid_s3:
                 notification = {"title": "Validation Error (Step 3)", "message": error_msg_s3, "color": "yellow", "icon": "⚠️"}
-                return current_step, {}, {}, {"display": "none"}, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}, {"display": "none"}
+                return current_step, {}, {}, {"display": "none"}, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}
 
             s3_notification, _log_entry, s3_error = process_step3_completion(s3_latitude, s3_longitude, s3_elevation, step_data, asset_info)
             
@@ -364,7 +355,7 @@ def handle_wizard_navigation(
             new_step = 3 
             return (
                 new_step, {}, {"display": "none"}, {}, step_data, asset_info, notification,
-                [], "", "", "", "", {"display": "none"}, {"display": "none"}
+                [], "", "", "", "", {"display": "none"}
             )
         else: 
             new_step = min(current_step + 1, 3) 
@@ -398,7 +389,7 @@ def handle_wizard_navigation(
 
     # The variable `loading_visible` from the original code is effectively always False in this path
     # So, loading_style_output will be {"display": "none"}
-    return new_step, prev_style, next_style, complete_style, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}, loading_style_output
+    return new_step, prev_style, next_style, complete_style, step_data, asset_info, notification, [], "", "", "", "", {"display": "none"}
 
 # Callback to populate Met Tower dropdown and enable Next button
 @callback(
