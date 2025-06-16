@@ -13,60 +13,71 @@ import pandas as pd
 def create_step4_layout():
     """Create the layout for Step 4: Ingest Configuration"""
     return dmc.Stack(
-        spacing="md",
+        gap="md",
         children=[
             dmc.Alert(
                 "Location details saved! Now configure ingest settings.",
-                title="Step 3 Complete",
+                title="Step 3 Complete!",
                 color="green",
-                id="step4-success-alert",
-                style={"display": "none"} # Initially hidden
+                id="step4-success-alert-new", # ID Updated
+                hide=True, # Initially hidden, shown by callback
+                withCloseButton=True
+                # children="" # Removed redundant children prop
+            ),
+            # Context display
+            dmc.SimpleGrid(
+                cols=2,
+                spacing="md",
+                mb="md",
+                children=[
+                    dmc.TextInput(label="Asset Name:", id="step4-asset-name-display-new", disabled=True, style={"width": "100%"}),
+                    dmc.TextInput(label="Project:", id="step4-project-name-display-new", disabled=True, style={"width": "100%"}),
+                ]
             ),
             dmc.Text(
                 "Configure the data ingest parameters for this asset:",
-                size="sm",
-                color="dimmed",
+                fz="sm",
+                c="dimmed", # Theme-aware
                 mb="lg"
             ),
             dmc.SimpleGrid(
                 cols=2,
                 spacing="lg",
-                breakpoints=[{"maxWidth": "sm", "cols": 1}],
                 children=[
                     dmc.TextInput(
                         label="Sender",
-                        id="step4-sender-input",
+                        id="step4-sender-input-new", # ID Updated
                         placeholder="e.g., sender@example.com or specific identifier",
                         required=True,
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Logger Site Number",
-                        id="step4-logger-site-number-input",
+                        id="step4-logger-site-number-input-new", # ID Updated
                         placeholder="e.g., 12345",
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Dropbox Path",
-                        id="step4-dropbox-input",
+                        id="step4-dropbox-input-new", # ID Updated
                         placeholder="e.g., /Apps/METData/Site123/",
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Altosphere Path",
-                        id="step4-altosphere-input",
+                        id="step4-altosphere-input-new", # ID Updated
                         placeholder="e.g., /data/projects/ProjectX/Site123/",
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Gmail Folder ID",
-                        id="step4-gmail-folder-input",
+                        id="step4-gmail-folder-input-new", # ID Updated
                         placeholder="Gmail Label ID for email processing",
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Email Text (for filtering)",
-                        id="step4-email-text-input",
+                        id="step4-email-text-input-new", # ID Updated
                         placeholder="Specific text in email subject or body",
                         style={"width": "100%"}
                     ),
@@ -75,17 +86,36 @@ def create_step4_layout():
             dmc.Space(h="md"),
             dmc.Checkbox(
                 label="Show in Logger Viewer",
-                id="step4-logger-viewer-checkbox",
+                id="step4-logger-viewer-checkbox-new", # ID Updated
                 checked=True,
                 mb="sm"
             ),
             dmc.Checkbox(
                 label="Show in Email Reports",
-                id="step4-email-checkbox",
+                id="step4-email-checkbox-new", # ID Updated
                 checked=True
             ),
-            # Hidden input to store project_asset_id from previous steps
-            html.Div(id="step4-project-asset-id-store", style={"display": "none"})
+            dmc.Alert(
+                id="step4-alert-message-new", # New alert for Step 4 errors
+                title="Input Error!",
+                color="red",
+                hide=True,
+                withCloseButton=True,
+                children="",
+                mt="md"
+            ),
+            # Hidden input to store project_asset_id from previous steps (already present, ID not changed as it's internal)
+            # html.Div(id="step4-project-asset-id-store", style={"display": "none"}) 
+            # Keeping original ID for this store unless callbacks specifically need -new.
+            # For consistency, let's update it if it's intended to be part of the "new" modal flow.
+            # However, this store is not directly interacted with by addNewAssetModalNew.py's stepper callback in the current plan.
+            # It's likely used by process_step4_completion. Let's assume its ID can remain for now,
+            # or if it's truly part of the "new" flow, it should be step4-project-asset-id-store-new.
+            # Given the other IDs are changing, let's change this one too for consistency if it's used by the orchestrator.
+            # For now, the problem description doesn't involve its direct use by the orchestrator's stepper callback.
+            # The process_step4_completion function would be called by the orchestrator, passing project_asset_id.
+            # So this hidden div might be redundant if data is passed via dcc.Store("wizard-step-data-new").
+            # Let's remove it for now and assume project_asset_id comes from the main wizard store.
         ]
     )
 
@@ -101,6 +131,7 @@ def process_step4_completion(sender, dropbox_path, gmail_folder_id, email_text, 
     try:
         if project_asset_id is None:
             return {
+                "id": f"error-{pd.Timestamp.now().timestamp()}",
                 "title": "Error",
                 "message": "Project Asset ID is missing. Cannot save ingest configuration.",
                 "color": "red", "icon": "❌"
@@ -131,6 +162,7 @@ def process_step4_completion(sender, dropbox_path, gmail_folder_id, email_text, 
         # --- End of placeholder ---
 
         notification = {
+            "id": f"success-{pd.Timestamp.now().timestamp()}",
             "title": "Ingest Configuration Saved!",
             "message": "Data ingest settings have been configured.",
             "color": "green",
@@ -145,6 +177,7 @@ def process_step4_completion(sender, dropbox_path, gmail_folder_id, email_text, 
     except Exception as e:
         error_msg = f"Failed to save ingest configuration: {str(e)}"
         notification = {
+            "id": f"error-{pd.Timestamp.now().timestamp()}",
             "title": "Ingest Config Error",
             "message": error_msg,
             "color": "red",

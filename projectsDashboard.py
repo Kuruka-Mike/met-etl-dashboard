@@ -32,12 +32,12 @@ def create_project_metrics_card(total_projects=0):
         },
         children=[
             dmc.Stack(
-                spacing="sm",
+                gap="sm",
                 align="center",
                 children=[
-                    dmc.Text("Total Projects", size="md", weight=600, color="white", align="center"),
-                    dmc.Text(str(total_projects), size="2xl", weight=700, color="white", align="center"),
-                    dmc.Text("In Database", size="sm", color="rgba(255,255,255,0.8)", align="center")
+                    dmc.Text("Total Projects", fz="md", fw=600, c="white", ta="center"),
+                    dmc.Text(str(total_projects), fz="2xl", fw=700, c="white", ta="center"),
+                    dmc.Text("In Database", fz="sm", c="rgba(255,255,255,0.8)", ta="center")
                 ]
             )
         ]
@@ -49,20 +49,20 @@ def create_project_actions_card():
         radius="md",
         p="lg",
         style={
-            "background": "#23262f",
-            "border": "1px solid #3a3d46",
+            # "background": "#23262f", # Let theme handle
+            # "border": "1px solid #3a3d46", # Let theme handle
             "width": "250px",
             "height": "180px",
         },
         children=[
             dmc.Stack(
-                spacing="sm",
+                gap="sm",
                 children=[
-                    dmc.Text("Quick Actions", size="md", weight=600, color="white", mb="xs"),
+                    dmc.Text("Quick Actions", fz="md", fw=600, mb="xs"), # Removed c="white"
                     dmc.Button(
                         "Add New Project",
                         id="quick-add-project-btn",
-                        leftIcon="➕",
+                        leftSection="➕",
                         color="blue",
                         size="sm",
                         fullWidth=True
@@ -70,7 +70,7 @@ def create_project_actions_card():
                     dmc.Button(
                         "Refresh Data",
                         id="refresh-projects-btn",
-                        leftIcon="🔄",
+                        leftSection="🔄",
                         color="gray",
                         variant="light",
                         size="sm",
@@ -84,27 +84,27 @@ def create_project_actions_card():
 def create_projects_dashboard_layout():
     """Create the complete projects dashboard layout"""
     return html.Div(
-        style={"padding": "20px", "maxWidth": "800px", "margin": "0 auto"},
+        style={"padding": "20px", "maxWidth": "1200px", "margin": "0 auto"},
         children=[
             dcc.Store(id="projects-dashboard-refresh-trigger", data=0),
             create_add_project_modal(),
             # Header Section
             dmc.Stack(
-                spacing="xs",
+                gap="xs",
                 mb="lg",
                 children=[
-                    dmc.Title("Project Management", order=2, color="white"),
-                    dmc.Text("Organize and manage projects by client", color="dimmed", size="md")
+                    dmc.Title("Project Management", order=2), # Removed c="white"
+                    dmc.Text("Organize and manage projects by client", c="dimmed", fz="md")
                 ]
             ),
             # Metrics Row
             dmc.Group(
-                spacing="md",
+                gap="md",
                 mb="lg",
                 align="flex-start",
                 children=[
-                    html.Div(id="project-metrics-container"),
-                    create_project_actions_card()
+                    create_project_actions_card(),
+                    html.Div(id="project-metrics-container")
                 ]
             ),
             # Client-organized project cards
@@ -148,13 +148,13 @@ def update_projects_dashboard(refresh_trigger):
         card = dmc.Paper(
             radius="md",
             p="lg",
-            style={"background": "#23262f", "border": "1px solid #3a3d46"},
+            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
             children=[
                 dmc.Group(
-                    position="apart",
+                    justify="space-between",
                     mb="md",
                     children=[
-                        dmc.Title(client, order=4, color="blue"),
+                        dmc.Title(client, order=4, c="blue.5"),
                         dmc.Tooltip(
                             label="Add New Project",
                             withArrow=True,
@@ -173,21 +173,23 @@ def update_projects_dashboard(refresh_trigger):
                 dmc.Table(
                     striped=True,
                     highlightOnHover=True,
-                    style={"backgroundColor": "#23262f"},
+                    withTableBorder=True,
+                    withColumnBorders=True,
+                    withRowBorders=True,
+                    # style={"backgroundColor": "#23262f"}, # Let theme handle
                     children=[
-                            html.Thead([
-                                html.Tr([
-                                    html.Th("Project Name", style={"color": "white", "width": "300px"}),
-                                    html.Th("Assets", style={"color": "white", "width": "100px", "textAlign": "center"}),
-                                    html.Th("Actions", style={"color": "white", "width": "200px"}),
+                            dmc.TableThead([
+                                dmc.TableTr([
+                                    dmc.TableTh("Project Name", style={"width": "300px"}),
+                                    dmc.TableTh("Assets", style={"width": "100px", "textAlign": "center"}),
+                                    dmc.TableTh("Actions", style={"width": "200px"}),
                                 ])
                             ]),
-                            html.Tbody([
-                                html.Tr([
-                                    html.Td(
+                            dmc.TableTbody([
+                                dmc.TableTr([
+                                    dmc.TableTd(
                                         project["ProjectName"] or "No Project",
                                         style={
-                                            "color": "white",
                                             "fontWeight": "600",
                                             "overflow": "hidden",
                                             "textOverflow": "ellipsis",
@@ -195,20 +197,20 @@ def update_projects_dashboard(refresh_trigger):
                                             "maxWidth": 0,
                                         }
                                     ),
-                                    html.Td(
+                                    dmc.TableTd(
                                         str(project["AssetCount"] or 0),
-                                        style={"color": "white", "textAlign": "center"}
+                                        style={"textAlign": "center"}
                                     ),
-                                    html.Td(
+                                    dmc.TableTd(
                                         dmc.Group(
-                                        spacing="xs",
+                                        gap="xs",
                                         children=[
                                             dmc.Button("View", size="xs", variant="light", color="blue"),
                                             dmc.Button("Edit", size="xs", variant="outline", color="gray"),
                                             dmc.Button("Add Asset", size="xs", variant="outline", color="green"),
                                         ]
-                                    ),
-                                    style={"padding": "4px"}
+                                    )
+                                    # style={"padding": "4px"} # Padding handled by dmc.Table spacing or CSS
                                 )
                             ]) for project in projects
                         ])
@@ -218,5 +220,5 @@ def update_projects_dashboard(refresh_trigger):
         )
         cards.append(card)
 
-    project_cards = dmc.Stack(spacing="xl", children=cards)
+    project_cards = dmc.Stack(gap="xl", children=cards)
     return create_project_metrics_card(total_projects), project_cards

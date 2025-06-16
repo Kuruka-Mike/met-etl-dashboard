@@ -20,10 +20,10 @@ def create_add_client_modal():
         id="modern-add-client-modal",
         size="md",
         centered=True,
-        overlayBlur=2,
+        overlayProps={"background_color": "rgba(0, 0, 0, 0.55)", "blur": 3},
         children=[
             dmc.Stack(
-                spacing="md",
+                gap="md",
                 children=[
                     dmc.TextInput(
                         label="Client Name",
@@ -33,7 +33,7 @@ def create_add_client_modal():
                         style={"width": "100%"}
                     ),
                     dmc.Group(
-                        position="right",
+                        justify="flex-end",
                         mt="md",
                         children=[
                             dmc.Button(
@@ -101,6 +101,7 @@ def add_new_client(n_clicks, client_name, toast_data, log_data, current_trigger)
     try:
         dbc_instance.addClient(client_name, "1")
         notification = {
+            "id": f"success-{pd.Timestamp.now().timestamp()}",
             "title": "Success!",
             "message": f"Client '{client_name}' has been added successfully.",
             "color": "green",
@@ -114,6 +115,7 @@ def add_new_client(n_clicks, client_name, toast_data, log_data, current_trigger)
         return "", notification, log, current_trigger + 1
     except ValueError as e:
         notification = {
+            "id": f"warning-{pd.Timestamp.now().timestamp()}",
             "title": "Warning",
             "message": str(e),
             "color": "yellow",
@@ -127,6 +129,7 @@ def add_new_client(n_clicks, client_name, toast_data, log_data, current_trigger)
         return client_name, notification, log, current_trigger
     except Exception as e:
         notification = {
+            "id": f"error-{pd.Timestamp.now().timestamp()}",
             "title": "Error",
             "message": f"Failed to add client: {str(e)}",
             "color": "red",

@@ -22,35 +22,47 @@ dbc_instance = DBcontoller()
 def create_step3_layout():
     """Create the layout for Step 3: Location Details"""
     return dmc.Stack(
-        spacing="md",
+        gap="md",
         children=[
             dmc.Alert(
-                "Project asset configured successfully! Now add location details.",
-                title="Step 2 Complete",
+                "Project asset configured! Now add location details.", # Slightly updated message
+                title="Step 2 Complete!",
                 color="green",
-                id="step3-success-alert",
-                style={"display": "none"}
+                id="step3-success-alert-new", # ID Updated
+                hide=True, # Initially hidden, shown by callback
+                withCloseButton=True
+                # children="" # Removed redundant children prop
+            ),
+            # Context display
+            dmc.SimpleGrid(
+                cols=2,
+                spacing="md",
+                mb="md",
+                children=[
+                    dmc.TextInput(label="Asset Name:", id="step3-asset-name-display-new", disabled=True, style={"width": "100%"}),
+                    dmc.TextInput(label="Project:", id="step3-project-name-display-new", disabled=True, style={"width": "100%"}),
+                ]
             ),
             dmc.Text(
                 "Enter the geographic location and elevation for this asset. The map will update as you type.",
-                size="sm", # Smaller text
-                color="dimmed",
-                mb="lg" # More bottom margin
+                fz="sm", 
+                c="dimmed", # This is theme-aware
+                mb="lg"
             ),
             dmc.Grid(
                 gutter="xl",
                 children=[
-                    dmc.Col( # Inputs Column - on the left
+                    dmc.GridCol( # Inputs Column - on the left
                         span=7,
                         children=[
                             dmc.Stack(
-                                spacing="lg",
+                                gap="lg",
                                 children=[
                                     dmc.NumberInput(
                                         label="Latitude",
-                                        id="step3-latitude-input",
+                                        id="step3-latitude-input-new", # ID Updated
                                         placeholder="e.g., 40.7128",
-                                        precision=6,
+                                        decimalScale=6,
                                         step=0.000001,
                                         min=-90,
                                         max=90,
@@ -59,9 +71,9 @@ def create_step3_layout():
                                     ),
                                     dmc.NumberInput(
                                         label="Longitude",
-                                        id="step3-longitude-input",
+                                        id="step3-longitude-input-new", # ID Updated
                                         placeholder="e.g., -74.0060",
-                                        precision=6,
+                                        decimalScale=6,
                                         step=0.000001,
                                         min=-180,
                                         max=180,
@@ -70,9 +82,9 @@ def create_step3_layout():
                                     ),
                                     dmc.NumberInput(
                                         label="Elevation (m)",
-                                        id="step3-elevation-input",
+                                        id="step3-elevation-input-new", # ID Updated
                                         placeholder="e.g., 100",
-                                        precision=2,
+                                        decimalScale=2,
                                         step=0.01,
                                         min=-500,
                                         max=10000,
@@ -83,51 +95,70 @@ def create_step3_layout():
                             )
                         ]
                     ),
-                    dmc.Col( # Map Column - on the right
+                    dmc.GridCol( # Map Column - on the right
                         span=5,
                         children=[
-                            dmc.Paper(
-                                shadow="sm",
-                                p="md",
-                                radius="md",
-                                withBorder=True,
-                                # Attempt to match height of 3 stacked inputs + spacing.
-                                # Approx height of NumberInput is ~70-80px with label.
-                                # 3 * 80px + 2 * lg_spacing (1.5rem ~ 24px) = 240 + 48 = ~288px.
-                                # Let's use a fixed height that should be close.
-                                style={"height": "290px", "background": "#1A1B1E"},
+                            html.Div(
+                                style={"position": "relative"},
                                 children=[
-                                    dcc.Graph(
-                                        id="step3-mapbox-map",
-                                        style={"height": "100%", "width": "100%"},
-                                        config={'displayModeBar': False}, # Hide mode bar for cleaner look
-                                        figure=go.Figure(
-                                            layout=go.Layout(
-                                                mapbox_style="streets",  # Show US with roads/labels on load
-                                                mapbox_accesstoken=MAPBOX_API_KEY,
-                                                mapbox_center={"lat": 39.8283, "lon": -98.5795}, # US Center
-                                                mapbox_zoom=3,
-                                                margin={"r":0,"t":0,"l":0,"b":0},
-                                                paper_bgcolor="#1A1B1E",
-                                                annotations=[dict(text="Mapbox API Key Missing. Please check .env file.", showarrow=False, font=dict(color="white"))] if MAPBOX_API_KEY is None else []
+                                    dmc.LoadingOverlay(
+                                        id="step3-map-loading-overlay-new", # ID Updated
+                                        visible=False,
+                                        overlayProps={"blur": 2},
+                                        loaderProps={"color": "blue", "variant": "bars"}
+                                    ),
+                                    dmc.Paper(
+                                        shadow="sm",
+                                        p="md",
+                                        radius="md",
+                                        withBorder=True,
+                                        # style={"height": "290px", "background": "#1A1B1E"}, # Removed background
+                                        style={"height": "290px"},
+                                        children=[
+                                            dcc.Graph(
+                                                id="step3-mapbox-map-new", # ID Updated
+                                                style={"height": "100%", "width": "100%"},
+                                                config={'displayModeBar': False},
+                                                figure=go.Figure(
+                                                    layout=go.Layout(
+                                                        mapbox_style="streets", # Default, can be themed
+                                                        mapbox_accesstoken=MAPBOX_API_KEY,
+                                                        mapbox_center={"lat": 39.8283, "lon": -98.5795},
+                                                        mapbox_zoom=3,
+                                                        margin={"r":0,"t":0,"l":0,"b":0},
+                                                        # paper_bgcolor="#1A1B1E", # Let theme handle or set transparent
+                                                        paper_bgcolor='rgba(0,0,0,0)', # Transparent to inherit Paper bg
+                                                        plot_bgcolor='rgba(0,0,0,0)', # Transparent plot area
+                                                        annotations=[dict(text="Mapbox API Key Missing. Please check .env file.", showarrow=False, font=dict(color="white"))] if MAPBOX_API_KEY is None else []
+                                                    )
+                                                )
                                             )
-                                        )
+                                        ]
                                     )
                                 ]
                             )
                         ]
                     )
                 ]
+            ),
+            dmc.Alert(
+                id="step3-alert-message-new", # New alert for Step 3 errors
+                title="Input Error!",
+                color="red",
+                hide=True,
+                withCloseButton=True,
+                children="",
+                mt="md"
             )
         ]
     )
 
 # Callback to update Mapbox map based on Lat/Lon input
 @callback(
-    Output("step3-mapbox-map", "figure"),
-    [Input("step3-latitude-input", "value"),
-     Input("step3-longitude-input", "value")],
-    [State("step3-mapbox-map", "figure")] # Keep existing figure state for smooth updates
+    Output("step3-mapbox-map-new", "figure"), # ID Updated
+    [Input("step3-latitude-input-new", "value"), # ID Updated
+     Input("step3-longitude-input-new", "value")], # ID Updated
+    [State("step3-mapbox-map-new", "figure")] # ID Updated
 )
 def update_map_on_lat_lon_change(latitude, longitude, current_figure):
     if MAPBOX_API_KEY is None:
@@ -163,16 +194,34 @@ def update_map_on_lat_lon_change(latitude, longitude, current_figure):
         except ValueError:
             pass # Keep default view if conversion fails
 
+    # Determine map style based on current theme (this requires a clientside callback or a trigger)
+    # For now, let's default to a common light style and assume dark mode will be handled by mapbox if it supports it.
+    # A more robust solution would involve passing theme to this callback or using clientside update.
+    # map_style = "light-v10" # Example, can be "dark-v10", "streets-v11", etc.
+    
+    # The mapbox_style in go.Layout can be 'open-street-map', 'white-bg', 'carto-positron', 
+    # 'carto-darkmatter', 'stamen-terrain', 'stamen-toner', 'stamen-watercolor' or a custom URL.
+    # For theme-awareness, 'carto-positron' (light) and 'carto-darkmatter' (dark) are good.
+    # However, changing this dynamically based on theme from a server-side callback is tricky without a page refresh or specific trigger.
+    # For now, we'll keep "streets" and rely on the transparent paper_bgcolor.
+    
     layout = go.Layout(
-        mapbox_style="streets",  # Use "streets" for more road/label detail
+        mapbox_style="streets", 
         mapbox_accesstoken=MAPBOX_API_KEY,
         mapbox_center={"lat": map_center_lat, "lon": map_center_lon},
         mapbox_zoom=map_zoom,
         margin={"r":0,"t":0,"l":0,"b":0},
-        paper_bgcolor="#1A1B1E", # Match paper background
+        paper_bgcolor='rgba(0,0,0,0)', 
+        plot_bgcolor='rgba(0,0,0,0)',
         uirevision=' giữ nguyên ' # Preserve UI state like zoom on update
     )
-    
+    # Update annotations color based on theme (this part is tricky without knowing the theme in this callback)
+    # For now, if API key is missing, the annotation color is hardcoded to white.
+    # This might need a clientside callback for full theme-aware annotation color.
+    if MAPBOX_API_KEY is None and current_figure['layout'].get('annotations'):
+        current_figure['layout']['annotations'][0]['font']['color'] = 'red' # Make it visible on light bg too
+        layout['annotations'] = current_figure['layout']['annotations']
+
     return {"data": markers, "layout": layout}
 
 def validate_step3_data(latitude, longitude, elevation):
@@ -199,6 +248,7 @@ def process_step3_completion(latitude, longitude, elevation, step_data, asset_in
         if dbc_instance.add_project_asset_detail(project_asset_id, "Elevation", str(elevation)):
             success_count += 1
         notification = {
+            "id": f"success-{pd.Timestamp.now().timestamp()}",
             "title": "Asset Configuration Complete!",
             "message": f"Asset '{asset_info.get('asset_name')}' has been fully configured with location details.",
             "color": "green",
@@ -213,6 +263,7 @@ def process_step3_completion(latitude, longitude, elevation, step_data, asset_in
     except Exception as e:
         error_msg = f"Failed to complete asset configuration: {str(e)}"
         notification = {
+            "id": f"error-{pd.Timestamp.now().timestamp()}",
             "title": "Configuration Error",
             "message": error_msg + " Please restart the asset creation process.",
             "color": "red",

@@ -21,10 +21,10 @@ def create_add_project_modal():
         id="modern-add-project-modal",
         size="md",
         centered=True,
-        overlayBlur=2,
+        overlayProps={"background_color": "rgba(0, 0, 0, 0.55)", "blur": 3},
         children=[
             dmc.Stack(
-                spacing="md",
+                gap="md",
                 children=[
                     dmc.Select(
                         label="Client",
@@ -42,7 +42,7 @@ def create_add_project_modal():
                         style={"width": "100%"}
                     ),
                     dmc.Group(
-                        position="right",
+                        justify="flex-end",
                         mt="md",
                         children=[
                             dmc.Button(
@@ -133,6 +133,7 @@ def add_new_project(n_clicks, client_name, project_name, refresh_trigger, log_da
             dbc_instance.addProject(project_name, client_name)
             print("Project added successfully.")
             notification = {
+                "id": f"success-{pd.Timestamp.now().timestamp()}",
                 "title": "Success!",
                 "message": f"Project '{project_name}' was added to '{client_name}'.",
                 "color": "green",
@@ -147,6 +148,7 @@ def add_new_project(n_clicks, client_name, project_name, refresh_trigger, log_da
         except ValueError as e:
             print(f"ValueError adding project: {e}")
             notification = {
+                "id": f"warning-{pd.Timestamp.now().timestamp()}",
                 "title": "Warning",
                 "message": str(e),
                 "color": "yellow",
@@ -161,6 +163,7 @@ def add_new_project(n_clicks, client_name, project_name, refresh_trigger, log_da
         except Exception as e:
             print(f"Exception adding project: {e}")
             notification = {
+                "id": f"error-{pd.Timestamp.now().timestamp()}",
                 "title": "Error",
                 "message": f"Failed to add project: {str(e)}",
                 "color": "red",

@@ -1,3 +1,185 @@
 .mantine-ScrollArea-root {
     overflow-x: hidden;
 }
+
+/* Theme Overrides for Light Mode */
+html[data-mantine-color-scheme="light"] body,
+html[data-mantine-color-scheme="light"] #page-content {
+    background-color: #f0f2f5;
+    /* Light gray body (Mantine gray.1) */
+    color: #212529;
+    /* Dark text (Mantine gray.9) */
+}
+
+html[data-mantine-color-scheme="light"] .mantine-Paper-root {
+    background-color: #e9ecef;
+    /* Slightly darker gray cards (Mantine gray.2) */
+    color: #212529;
+    /* Ensure text in paper is dark */
+}
+
+/* Override for default text color in light mode if not inheriting properly */
+/* Apply to all titles in light mode, not just those in #page-content */
+html[data-mantine-color-scheme="light"] .mantine-Title-root {
+    color: #212529 !important;
+    /* Ensure titles are dark in light mode */
+}
+
+/* Specifically target Modal titles in light mode if the general Title rule is not enough */
+html[data-mantine-color-scheme="light"] .mantine-Modal-title {
+    color: #212529 !important;
+    /* Ensure Modal titles are dark in light mode */
+}
+
+html[data-mantine-color-scheme="light"] #page-content .mantine-Text-root {
+    color: #212529;
+    /* Ensure text within page content is dark in light mode */
+}
+
+/* Note: This is a general override. If some specific Text components need to be light (e.g., on dark cards), they'll need an explicit 'c' prop. */
+
+/* Ensure AppShell and its main area also get the body background in light mode */
+html[data-mantine-color-scheme="light"] .mantine-AppShell-root,
+html[data-mantine-color-scheme="light"] .mantine-AppShell-main {
+    background-color: #f0f2f5 !important;
+    /* Explicit color + important for main content area */
+}
+
+html[data-mantine-color-scheme="light"] .mantine-AppShell-header {
+    background-color: #e9ecef !important;
+    /* Match card/paper color (gray.2) */
+    border-bottom-color: #dee2e6 !important;
+    /* A slightly darker border (gray.3) */
+}
+
+/* Sidebar is a Paper, so it already gets #e9ecef from .mantine-Paper-root rule */
+
+/* Ensure specific components that might have their own dark defaults adapt */
+/* Example for TextInput if it was still dark - already handled by removing inline styles */
+/* html[data-mantine-color-scheme="light"] .mantine-TextInput-input {
+    background-color: #fff;
+    border-color: #ced4da;
+    color: #000;
+} */
+
+/* Ensure top bar title adapts - already handled by removing c prop */
+/* html[data-mantine-color-scheme="light"] .mantine-AppShell-header .mantine-Text-root {
+    color: #212529;
+} */
+
+/* Theme Overrides for Dark Mode */
+html[data-mantine-color-scheme="dark"] body,
+html[data-mantine-color-scheme="dark"] #page-content {
+    background-color: #1A1B1E;
+    /* Very dark gray (Mantine dark.7) */
+    color: #C1C2C5;
+    /* Light text (Mantine dark.0) */
+}
+
+html[data-mantine-color-scheme="dark"] .mantine-Paper-root {
+    background-color: #25262B;
+    /* Lighter dark gray for cards (Mantine dark.6) */
+    color: #C1C2C5;
+    /* Ensure text in paper is light */
+    border-color: #373A40 !important;
+    /* Border for paper (Mantine dark.4) to help distinguish */
+}
+
+html[data-mantine-color-scheme="dark"] .mantine-AppShell-root,
+html[data-mantine-color-scheme="dark"] .mantine-AppShell-main {
+    background-color: #1A1B1E !important;
+    /* Match body */
+}
+
+html[data-mantine-color-scheme="dark"] .mantine-AppShell-header {
+    background-color: #25262B !important;
+    /* Match card/paper color (dark.6) */
+    border-bottom-color: #373A40 !important;
+    /* Darker border (dark.4) */
+}
+
+/* Custom Table Styling via CSS Variables */
+
+/* Light Mode Table Styles */
+html[data-mantine-color-scheme="light"] .mantine-Table-table {
+    --table-border-color: #dee2e6;
+    /* Mantine gray.3 for cell borders */
+    --table-highlight-on-hover-color: #f1f3f5;
+    /* Mantine gray.1 for hover */
+}
+
+/* To ensure the outer border of the table itself also uses a similar color if withTableBorder is true */
+html[data-mantine-color-scheme="light"] .mantine-Table-table[data-with-table-border] {
+    border-color: #ced4da !important;
+    /* Mantine gray.4 for outer border */
+}
+
+
+/* Dark Mode Table Styles */
+html[data-mantine-color-scheme="dark"] .mantine-Table-table {
+    --table-border-color: #373A40;
+    /* Mantine dark.4 for cell borders */
+    --table-highlight-on-hover-color: #2C2E33;
+    /* Mantine dark.5 for hover */
+}
+
+/* To ensure the outer border of the table itself also uses a similar color if withTableBorder is true */
+html[data-mantine-color-scheme="dark"] .mantine-Table-table[data-with-table-border] {
+    border-color: #495057 !important;
+    /* Mantine gray.7 (used as a dark border) */
+}
+
+/* Custom Stepper Styling */
+
+/* Light Mode Stepper Icon Background (non-active, non-completed) */
+html[data-mantine-color-scheme="light"] .mantine-Stepper-stepIcon:not([data-progress]):not([data-completed]) {
+    background-color: #d5d7d7;
+    /* Mantine gray.1 or gray.2 */
+    border: 1px solid #dee2e6;
+    /* Mantine gray.3 */
+}
+
+/* Ensure the number inside is dark */
+html[data-mantine-color-scheme="light"] .mantine-Stepper-stepIcon:not([data-progress]):not([data-completed])>* {
+    color: #495057;
+    /* Mantine gray.7 */
+}
+
+
+/* Dark Mode Stepper Icon Background (non-active, non-completed) */
+html[data-mantine-color-scheme="dark"] .mantine-Stepper-stepIcon:not([data-progress]):not([data-completed]) {
+    background-color: #373A40;
+    /* Mantine dark.4 */
+    border: 1px solid #495057;
+    /* Mantine dark.3 */
+}
+
+/* Ensure the number inside is light */
+html[data-mantine-color-scheme="dark"] .mantine-Stepper-stepIcon:not([data-progress]):not([data-completed])>* {
+    color: #c1c2c5;
+    /* Mantine dark.0 */
+}
+
+
+/* Completed Step Icon Styling (Green) - applies to both light and dark modes */
+.mantine-Stepper-step[data-completed="true"] .mantine-Stepper-stepIcon,
+/* Mantine React uses data-completed */
+.mantine-Stepper-step[data-step-state="completed"] .mantine-Stepper-stepIcon
+
+/* Fallback if DMC uses data-step-state */
+    {
+    background-color: var(--mantine-color-green-6) !important;
+    border-color: var(--mantine-color-green-8) !important;
+}
+
+.mantine-Stepper-step[data-completed="true"] .mantine-Stepper-stepCompletedIcon,
+.mantine-Stepper-step[data-step-state="completed"] .mantine-Stepper-stepCompletedIcon {
+    color: white !important;
+    /* Checkmark color */
+}
+
+/* Ensure active step (which is blue by default from stepper prop) has white number/icon */
+.mantine-Stepper-step[data-progress="true"] .mantine-Stepper-stepIcon>*,
+.mantine-Stepper-step[data-step-state="stepProgress"] .mantine-Stepper-stepIcon>* {
+    color: white !important;
+}

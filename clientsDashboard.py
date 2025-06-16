@@ -10,7 +10,6 @@ Responsibilities:
 
 import dash_mantine_components as dmc
 from dash import html, dcc, callback, Output, Input, State
-import dash_bootstrap_components as dbc
 from DBcontroller import DBcontoller
 from addClientModal import create_add_client_modal
 
@@ -34,12 +33,12 @@ def create_client_metrics_card(total_clients=0):
         },
         children=[
             dmc.Stack(
-                spacing="sm",
+                gap="sm",
                 align="center",
                 children=[
-                    dmc.Text("Total Clients", size="md", weight=600, color="white", align="center"),
-                    dmc.Text(str(total_clients), size="2xl", weight=700, color="white", align="center"),
-                    dmc.Text("In Database", size="sm", color="rgba(255,255,255,0.8)", align="center")
+                    dmc.Text("Total Clients", fz="md", fw=600, c="white", ta="center"),
+                    dmc.Text(str(total_clients), fz="2xl", fw=700, c="white", ta="center"),
+                    dmc.Text("In Database", fz="sm", c="rgba(255,255,255,0.8)", ta="center")
                 ]
             )
         ]
@@ -51,20 +50,20 @@ def create_client_actions_card():
         radius="md",
         p="lg",
         style={
-            "background": "#23262f",
-            "border": "1px solid #3a3d46",
+            # "background": "#23262f", # Let theme handle
+            # "border": "1px solid #3a3d46", # Let theme handle
             "width": "250px",
             "height": "180px",
         },
         children=[
             dmc.Stack(
-                spacing="sm",
+                gap="sm",
                 children=[
-                    dmc.Text("Quick Actions", size="md", weight=600, color="white", mb="xs"),
+                    dmc.Text("Quick Actions", fz="md", fw=600, mb="xs"), # Removed c="white"
                     dmc.Button(
                         "Add New Client",
                         id="open-modern-add-client-btn",
-                        leftIcon="➕",
+                        leftSection="➕",
                         color="blue",
                         size="sm",
                         fullWidth=True
@@ -72,7 +71,7 @@ def create_client_actions_card():
                     dmc.Button(
                         "Refresh Data",
                         id="refresh-clients-btn",
-                        leftIcon="🔄",
+                        leftSection="🔄",
                         color="gray",
                         variant="light",
                         size="sm",
@@ -90,10 +89,11 @@ def create_simple_clients_table(clients_data=None):
         return dmc.Paper(
             radius="md",
             p="lg",
-            style={"background": "#23262f", "border": "1px solid #3a3d46", "textAlign": "center"},
+            # style={"background": "#23262f", "border": "1px solid #3a3d46", "textAlign": "center"}, # Let theme handle
+            style={"textAlign": "center"},
             children=[
                 dmc.Stack(
-                    spacing="md",
+                    gap="md",
                     align="center",
                     children=[
                         dmc.ThemeIcon(
@@ -103,8 +103,8 @@ def create_simple_clients_table(clients_data=None):
                             color="gray",
                             variant="light"
                         ),
-                        dmc.Text("No clients found", size="lg", weight=600, color="white"),
-                        dmc.Text("Get started by adding your first client", size="sm", color="dimmed"),
+                        dmc.Text("No clients found", fz="lg", fw=600), # Removed c="white"
+                        dmc.Text("Get started by adding your first client", fz="sm"), # Removed c="dimmed"
                         dmc.Button(
                             "Add First Client",
                             id="add-first-client-btn",
@@ -120,23 +120,21 @@ def create_simple_clients_table(clients_data=None):
     table_rows = []
     for i, (client_name, project_count) in enumerate(clients_data, 1):
         table_rows.append(
-            html.Tr([
-                html.Td(str(i), style={"color": "white", "padding": "8px"}),
-                html.Td(client_name, style={"color": "white", "padding": "8px", "fontWeight": "600"}),
-                html.Td(str(project_count), style={"color": "white", "padding": "8px"}),
-                html.Td(
-                    dmc.Badge("Active", color="green", variant="light", size="sm"),
-                    style={"padding": "8px"}
+            dmc.TableTr([
+                dmc.TableTd(str(i)),
+                dmc.TableTd(client_name, style={"fontWeight": "600"}),
+                dmc.TableTd(str(project_count)),
+                dmc.TableTd(
+                    dmc.Badge("Active", color="green", variant="light", size="sm")
                 ),
-                html.Td(
+                dmc.TableTd(
                     dmc.Group(
-                        spacing="xs",
+                        gap="xs",
                         children=[
                             dmc.Button("View", size="xs", variant="light", color="blue"),
                             dmc.Button("Edit", size="xs", variant="outline", color="gray")
                         ]
-                    ),
-                    style={"padding": "8px"}
+                    )
                 )
             ])
         )
@@ -144,16 +142,16 @@ def create_simple_clients_table(clients_data=None):
     return dmc.Paper(
         radius="md",
         p="md",
-        style={"background": "#23262f", "border": "1px solid #3a3d46"},
+        # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
         children=[
             dmc.Group(
-                position="apart",
+                justify="space-between",
                 mb="md",
                 children=[
-                    dmc.Text("Client Directory", size="lg", weight=700, color="white"),
+                    dmc.Text("Client Directory", fz="lg", fw=700), # Removed c="white"
                     dmc.TextInput(
                         placeholder="Search clients...",
-                        icon="🔍",
+                        leftSection="🔍",
                         style={"width": "200px"},
                         size="sm"
                     )
@@ -162,18 +160,20 @@ def create_simple_clients_table(clients_data=None):
             dmc.Table(
                 striped=True,
                 highlightOnHover=True,
-                style={"backgroundColor": "#23262f"},
+                withTableBorder=True,
+                withColumnBorders=True,
+                withRowBorders=True,
                 children=[
-                    html.Thead([
-                        html.Tr([
-                            html.Th("#", style={"color": "white", "backgroundColor": "#2a2d36", "padding": "8px"}),
-                            html.Th("Client Name", style={"color": "white", "backgroundColor": "#2a2d36", "padding": "8px"}),
-                            html.Th("Projects", style={"color": "white", "backgroundColor": "#2a2d36", "padding": "8px"}),
-                            html.Th("Status", style={"color": "white", "backgroundColor": "#2a2d36", "padding": "8px"}),
-                            html.Th("Actions", style={"color": "white", "backgroundColor": "#2a2d36", "padding": "8px"}),
+                    dmc.TableThead([
+                        dmc.TableTr([
+                            dmc.TableTh("#", style={"textAlign": "left"}),
+                            dmc.TableTh("Client Name", style={"textAlign": "left"}),
+                            dmc.TableTh("Projects", style={"textAlign": "left"}),
+                            dmc.TableTh("Status", style={"textAlign": "left"}),
+                            dmc.TableTh("Actions", style={"textAlign": "left"}),
                         ])
                     ]),
-                    html.Tbody(table_rows)
+                    dmc.TableTbody(table_rows)
                 ]
             )
         ]
@@ -187,7 +187,7 @@ def create_modern_add_client_modal():
         size="md",
         children=[
             dmc.Stack(
-                spacing="md",
+                gap="md",
                 children=[
                     dmc.TextInput(
                         label="Client Name",
@@ -197,7 +197,7 @@ def create_modern_add_client_modal():
                         style={"width": "100%"}
                     ),
                     dmc.Group(
-                        position="right",
+                        justify="flex-end",
                         mt="md",
                         children=[
                             dmc.Button(
@@ -217,6 +217,7 @@ def create_modern_add_client_modal():
             )
         ]
     )
+    
 
 def create_clients_dashboard_layout():
     """Create a simple, fast-loading clients dashboard layout"""
@@ -225,26 +226,26 @@ def create_clients_dashboard_layout():
         children=[
             # Header Section
             dmc.Group(
-                position="apart",
+                justify="space-between",
                 mb="lg",
                 children=[
                     dmc.Stack(
-                        spacing="xs",
+                        gap="xs",
                         children=[
-                            dmc.Title("Client Management", order=2, color="white"),
-                            dmc.Text("Manage your client accounts", color="dimmed", size="md")
+                            dmc.Title("Client Management", order=2), # Removed c="white"
+                            dmc.Text("Manage your client accounts", fz="md") # Removed c="dimmed"
                         ]
                     ),
                 ]
             ),
             # Metrics Row
             dmc.Group(
-                spacing="md",
+                gap="md",
                 mb="lg",
                 align="flex-start",
                 children=[
+                    create_client_actions_card(),
                     html.Div(id="client-metrics-container"),
-                    create_client_actions_card()
                 ]
             ),
             

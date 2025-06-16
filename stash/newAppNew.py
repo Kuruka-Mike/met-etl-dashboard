@@ -1,5 +1,5 @@
 """
-New main application script for the modernized Dash app.
+New main application script for the modernized Dash app (New Version).
 
 - Uses dash-mantine-components for modern UI
 - Creates a sleek BI-style dashboard with proper routing
@@ -14,7 +14,7 @@ import dash
 import dash_mantine_components as dmc
 from dash import html, dcc, Output, Input, callback
 from dashboardLayout import dashboard_layout, create_navigation_sidebar, create_modern_topbar, create_main_dashboard_content
-from newComponents import (
+from newComponentsNew import (  # Import from new components module
     create_dashboard_overview,
     create_clients_page,
     create_projects_page,
@@ -40,23 +40,6 @@ app.clientside_callback(
     prevent_initial_call=True
 )
 
-# Clientside callback for theme switching
-app.clientside_callback(
-    """
-    (n_clicks) => {
-        if (n_clicks > 0) { // Ensure it's a click event
-            const currentScheme = document.documentElement.getAttribute('data-mantine-color-scheme');
-            const newScheme = currentScheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-mantine-color-scheme', newScheme);
-        }
-        return window.dash_clientside.no_update;
-    }
-    """,
-    Output("color-scheme-toggle", "id"), # Dummy output, value doesn't matter
-    Input("color-scheme-toggle", "n_clicks"),
-    prevent_initial_call=True
-)
-
 # Main app layout with routing
 app.layout = dmc.MantineProvider(
     theme={
@@ -72,14 +55,7 @@ app.layout = dmc.MantineProvider(
         ),
         dcc.Location(id="url", refresh=False),
         dcc.Store(id="notification-log-store", data=[]),
-        html.Div(
-            id="page-content",
-            style={
-                "backgroundColor": "var(--mantine-color-body)",
-                "color": "var(--mantine-color-text)",
-                "minHeight": "100vh" # Ensure it covers the viewport height
-            }
-        )
+        html.Div(id="page-content")
     ]
 )
 

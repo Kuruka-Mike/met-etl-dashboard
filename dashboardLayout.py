@@ -9,6 +9,7 @@ Mantine-style dashboard layout using dash-mantine-components (dmc).
 
 import dash_mantine_components as dmc
 from dash import html, dcc, callback, Output, Input, State
+from dash_iconify import DashIconify
 import plotly.express as px
 import pandas as pd
 
@@ -43,8 +44,8 @@ def create_navigation_sidebar(active_page=None):
         radius=0,
         p="md",
         style={
-            "background": "#181A1B",
-            "borderRight": "1px solid #23262f",
+            # "background": "#181A1B", # Let theme handle background
+            # "borderRight": "1px solid #23262f", # Let theme handle border
             "minHeight": "100vh",
             "width": 100,
             "display": "flex",
@@ -71,7 +72,7 @@ def create_navigation_sidebar(active_page=None):
             ),
             
             dmc.Stack(
-                spacing="lg",
+                gap="lg",
                 align="center",
                 children=[
                     create_nav_icon("🏠", "/", "Dashboard", active_page == "dashboard"),
@@ -100,29 +101,30 @@ def create_navigation_sidebar(active_page=None):
 
 def create_modern_topbar():
     """Create the modern topbar with search and user info"""
-    return dmc.Header(
-        height=80,
+    return dmc.AppShellHeader(
+        h=80,
         px="xl",
+        zIndex=300,
         style={
-            "background": "linear-gradient(135deg, #23262f 0%, #2a2d36 100%)",
-            "borderBottom": "1px solid #3a3d46",
-            "marginLeft": "90px"
+            # "background": "linear-gradient(135deg, #23262f 0%, #2a2d36 100%)", # Let theme handle background
+            # "borderBottom": "1px solid #3a3d46", # Let theme handle border
+            "marginLeft": "100px"
         },
         children=[
             dmc.Group(
-                position="apart",
+                justify="space-between",
                 align="center",
                 style={"height": "100%"},
                 children=[
                     dmc.Text(
                         "Met ETL Management Dashboard",
-                        weight=700,
-                        size="xl",
-                        color="gray.0",
+                        fw=700,
+                        fz="xl",
+                        # c="gray.0", # Let theme handle text color
                         style={"letterSpacing": "0.02em"}
                     ),
                     dmc.Group(
-                        spacing="md",
+                        gap="md",
                         children=[
                             dmc.TextInput(
                                 placeholder="Search assets, projects, clients...",
@@ -130,22 +132,32 @@ def create_modern_topbar():
                                 size="md",
                                 style={
                                     "width": 320,
-                                    "background": "#181A1B"
+                                    # "background": "#181A1B" # Let theme handle background
                                 },
                                 styles={
                                     "input": {
-                                        "backgroundColor": "#181A1B",
-                                        "borderColor": "#3a3d46",
-                                        "color": "#F5F5F5"
+                                        # "backgroundColor": "#181A1B", # Let theme handle background
+                                        # "borderColor": "#3a3d46", # Let theme handle border
+                                        # "color": "#F5F5F5" # Let theme handle text color
                                     }
                                 }
+                            ),
+                            dmc.ActionIcon(
+                                [
+                                    dmc.Paper(DashIconify(icon="radix-icons:sun", width=22), darkHidden=True),
+                                    dmc.Paper(DashIconify(icon="radix-icons:moon", width=22), lightHidden=True),
+                                ],
+                                variant="outline",
+                                color="yellow",
+                                id="color-scheme-toggle",
+                                size="lg",
+                                n_clicks=0
                             ),
                             dmc.Menu(
                                 id="notification-menu",
                                 position="bottom-end",
                                 shadow="md",
                                 withArrow=True,
-                                trigger="click",
                                 children=[
                                     dmc.MenuTarget(
                                         dmc.ActionIcon(
@@ -175,13 +187,14 @@ def create_modern_topbar():
                                     dmc.MenuDropdown(
                                         dmc.Stack(
                                             id="notification-log-list",
-                                            spacing="xs",
+                                            gap="xs",
                                             style={"minWidth": 260, "maxHeight": 320, "overflowY": "auto", "padding": 8}
                                         )
                                     )
                                 ]
                             ),
                             dmc.Avatar(
+                                "DB",
                                 radius="xl",
                                 color="blue",
                                 size="md",
@@ -214,8 +227,8 @@ def create_main_dashboard_content():
         ).update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            font_color='white',
-            title_font_color='white',
+            # font_color='white', # Let theme handle
+            # title_font_color='white', # Let theme handle
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
@@ -238,29 +251,29 @@ def create_main_dashboard_content():
             dmc.Grid(
                 gutter="xl",
                 children=[
-                    dmc.Col(
+                    dmc.GridCol(
                         span=9,
                         children=[
                             dmc.Paper(
                                 radius="md",
                                 p="xl",
-                                style={
-                                    "background": "linear-gradient(135deg, #23262f 0%, #2a2d36 100%)",
-                                    "border": "1px solid #3a3d46"
-                                },
+                                # style={
+                                #     "background": "linear-gradient(135deg, #23262f 0%, #2a2d36 100%)", # Let theme handle
+                                #     "border": "1px solid #3a3d46" # Let theme handle
+                                # },
                                 children=[
                                     dmc.Group(
-                                        position="apart",
+                                        justify="space-between",
                                         mb="lg",
                                         children=[
                                             dmc.Stack(
-                                                spacing="xs",
+                                                gap="xs",
                                                 children=[
-                                                    dmc.Text("Executive Overview", weight=700, size="xl", color="gray.0"),
-                                                    dmc.Text("Real-time insights into your asset portfolio", size="sm", color="gray.5"),
+                                                    dmc.Text("Executive Overview", fw=700, fz="xl"), 
+                                                    dmc.Text("Real-time insights into your asset portfolio", fz="sm"), # Removed c="gray.5"
                                                 ]
                                             ),
-                                            dmc.Badge("Live", color="green", variant="dot")
+                                            dmc.Badge("Live", color="green", variant="light")
                                         ]
                                     ),
                                     
@@ -269,7 +282,7 @@ def create_main_dashboard_content():
                                         gutter="md",
                                         mb="xl",
                                         children=[
-                                            dmc.Col(
+                                            dmc.GridCol(
                                                 dmc.Paper(
                                                     p="md",
                                                     radius="md",
@@ -279,14 +292,14 @@ def create_main_dashboard_content():
                                                         "textAlign": "center"
                                                     },
                                                     children=[
-                                                        dmc.Text("Total Assets", size="sm", weight=500),
-                                                        dmc.Text("88", size="2rem", weight=700),
-                                                        dmc.Text("+12% vs last month", size="xs")
+                                                        dmc.Text("Total Assets", fz="sm", fw=500),
+                                                        dmc.Text("88", fz="2rem", fw=700),
+                                                        dmc.Text("+12% vs last month", fz="xs")
                                                     ]
                                                 ),
                                                 span=3
                                             ),
-                                            dmc.Col(
+                                            dmc.GridCol(
                                                 dmc.Paper(
                                                     p="md",
                                                     radius="md",
@@ -296,14 +309,14 @@ def create_main_dashboard_content():
                                                         "textAlign": "center"
                                                     },
                                                     children=[
-                                                        dmc.Text("Active Projects", size="sm", weight=500),
-                                                        dmc.Text("24", size="2rem", weight=700),
-                                                        dmc.Text("+8% vs last month", size="xs")
+                                                        dmc.Text("Active Projects", fz="sm", fw=500),
+                                                        dmc.Text("24", fz="2rem", fw=700),
+                                                        dmc.Text("+8% vs last month", fz="xs")
                                                     ]
                                                 ),
                                                 span=3
                                             ),
-                                            dmc.Col(
+                                            dmc.GridCol(
                                                 dmc.Paper(
                                                     p="md",
                                                     radius="md",
@@ -313,14 +326,14 @@ def create_main_dashboard_content():
                                                         "textAlign": "center"
                                                     },
                                                     children=[
-                                                        dmc.Text("Data Points", size="sm", weight=500),
-                                                        dmc.Text("2.4M", size="2rem", weight=700),
-                                                        dmc.Text("+15% vs last month", size="xs")
+                                                        dmc.Text("Data Points", fz="sm", fw=500),
+                                                        dmc.Text("2.4M", fz="2rem", fw=700),
+                                                        dmc.Text("+15% vs last month", fz="xs")
                                                     ]
                                                 ),
                                                 span=3
                                             ),
-                                            dmc.Col(
+                                            dmc.GridCol(
                                                 dmc.Paper(
                                                     p="md",
                                                     radius="md",
@@ -330,9 +343,9 @@ def create_main_dashboard_content():
                                                         "textAlign": "center"
                                                     },
                                                     children=[
-                                                        dmc.Text("Uptime", size="sm", weight=500),
-                                                        dmc.Text("99.2%", size="2rem", weight=700),
-                                                        dmc.Text("+0.3% vs last month", size="xs")
+                                                        dmc.Text("Uptime", fz="sm", fw=500),
+                                                        dmc.Text("99.2%", fz="2rem", fw=700),
+                                                        dmc.Text("+0.3% vs last month", fz="xs")
                                                     ]
                                                 ),
                                                 span=3
@@ -344,7 +357,7 @@ def create_main_dashboard_content():
                                     dmc.Paper(
                                         p="md",
                                         radius="md",
-                                        style={"background": "#181A1B"},
+                                        # style={"background": "#181A1B"}, # Let theme handle
                                         children=[performance_chart]
                                     ),
                                 ]
@@ -356,34 +369,34 @@ def create_main_dashboard_content():
                             dmc.Grid(
                                 gutter="md",
                                 children=[
-                                    dmc.Col(
+                                    dmc.GridCol(
                                         dmc.Paper(
                                             p="lg",
                                             radius="md",
-                                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
+                                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
                                             children=[
-                                                dmc.Text("Recent Deployments", weight=600, size="lg", color="gray.0", mb="md"),
+                                                dmc.Text("Recent Deployments", fw=600, fz="lg", mb="md"), # Removed c="gray.0"
                                                 dmc.Stack(
-                                                    spacing="sm",
+                                                    gap="sm",
                                                     children=[
                                                         dmc.Group(
-                                                            position="apart",
+                                                            justify="space-between",
                                                             children=[
-                                                                dmc.Text("MET-0779 • Site Alpha", size="sm", color="white"),
+                                                                dmc.Text("MET-0779 • Site Alpha", fz="sm"), # Removed c="white"
                                                                 dmc.Badge("Deployed", color="green", size="sm")
                                                             ]
                                                         ),
                                                         dmc.Group(
-                                                            position="apart",
+                                                            justify="space-between",
                                                             children=[
-                                                                dmc.Text("LDR-1168 • Site Beta", size="sm", color="white"),
+                                                                dmc.Text("LDR-1168 • Site Beta", fz="sm"), # Removed c="white"
                                                                 dmc.Badge("Testing", color="yellow", size="sm")
                                                             ]
                                                         ),
                                                         dmc.Group(
-                                                            position="apart",
+                                                            justify="space-between",
                                                             children=[
-                                                                dmc.Text("SDR-2234 • Site Gamma", size="sm", color="white"),
+                                                                dmc.Text("SDR-2234 • Site Gamma", fz="sm"), # Removed c="white"
                                                                 dmc.Badge("Planned", color="blue", size="sm")
                                                             ]
                                                         ),
@@ -393,35 +406,35 @@ def create_main_dashboard_content():
                                         ),
                                         span=6
                                     ),
-                                    dmc.Col(
+                                    dmc.GridCol(
                                         dmc.Paper(
                                             p="lg",
                                             radius="md",
-                                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
+                                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
                                             children=[
-                                                dmc.Text("Data Processing", weight=600, size="lg", color="gray.0", mb="md"),
+                                                dmc.Text("Data Processing", fw=600, fz="lg", mb="md"), # Removed c="gray.0"
                                                 dmc.Stack(
-                                                    spacing="md",
+                                                    gap="md",
                                                     children=[
                                                         dmc.Group(
-                                                            position="apart",
+                                                            justify="space-between",
                                                             children=[
-                                                                dmc.Text("Files Processed Today", size="sm", color="white"),
-                                                                dmc.Text("1,247", size="sm", weight=600, color="green")
+                                                                dmc.Text("Files Processed Today", fz="sm"), # Removed c="white"
+                                                                dmc.Text("1,247", fz="sm", fw=600, c="green")
                                                             ]
                                                         ),
                                                         dmc.Group(
-                                                            position="apart",
+                                                            justify="space-between",
                                                             children=[
-                                                                dmc.Text("Processing Queue", size="sm", color="white"),
-                                                                dmc.Text("23", size="sm", weight=600, color="blue")
+                                                                dmc.Text("Processing Queue", fz="sm"), # Removed c="white"
+                                                                dmc.Text("23", fz="sm", fw=600, c="blue")
                                                             ]
                                                         ),
                                                         dmc.Group(
-                                                            position="apart",
+                                                            justify="space-between",
                                                             children=[
-                                                                dmc.Text("Failed Processes", size="sm", color="white"),
-                                                                dmc.Text("2", size="sm", weight=600, color="red")
+                                                                dmc.Text("Failed Processes", fz="sm"), # Removed c="white"
+                                                                dmc.Text("2", fz="sm", fw=600, c="red")
                                                             ]
                                                         ),
                                                     ]
@@ -434,45 +447,45 @@ def create_main_dashboard_content():
                             ),
                         ]
                     ),
-                    dmc.Col(
+                    dmc.GridCol(
                         span=3,
                         children=[
                             dmc.Paper(
                                 radius="md",
                                 p="lg",
-                                style={"background": "#23262f", "border": "1px solid #3a3d46"},
+                                # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
                                 children=[
-                                    dmc.Text("System Health", weight=600, size="lg", color="gray.0", mb="md"),
+                                    dmc.Text("System Health", fw=600, fz="lg", mb="md"), # Removed c="gray.0"
                                     
                                     # System status indicators
                                     dmc.Stack(
-                                        spacing="md",
+                                        gap="md",
                                         children=[
                                             dmc.Group(
-                                                position="apart",
+                                                justify="space-between",
                                                 children=[
-                                                    dmc.Text("API Services", size="sm", color="white"),
+                                                    dmc.Text("API Services", fz="sm"), # Removed c="white"
                                                     dmc.Badge("Operational", color="green", size="sm")
                                                 ]
                                             ),
                                             dmc.Group(
-                                                position="apart",
+                                                justify="space-between",
                                                 children=[
-                                                    dmc.Text("Database", size="sm", color="white"),
+                                                    dmc.Text("Database", fz="sm"), # Removed c="white"
                                                     dmc.Badge("Operational", color="green", size="sm")
                                                 ]
                                             ),
                                             dmc.Group(
-                                                position="apart",
+                                                justify="space-between",
                                                 children=[
-                                                    dmc.Text("Email Processing", size="sm", color="white"),
+                                                    dmc.Text("Email Processing", fz="sm"), # Removed c="white"
                                                     dmc.Badge("Operational", color="green", size="sm")
                                                 ]
                                             ),
                                             dmc.Group(
-                                                position="apart",
+                                                justify="space-between",
                                                 children=[
-                                                    dmc.Text("File Storage", size="sm", color="white"),
+                                                    dmc.Text("File Storage", fz="sm"), # Removed c="white"
                                                     dmc.Badge("Warning", color="yellow", size="sm")
                                                 ]
                                             ),
@@ -481,9 +494,9 @@ def create_main_dashboard_content():
                                     
                                     dmc.Divider(my="md"),
                                     
-                                    dmc.Text("Quick Actions", weight=500, size="md", color="gray.3", mb="sm"),
+                                    dmc.Text("Quick Actions", fw=500, fz="md", mb="sm"), # Removed c="gray.3"
                                     dmc.Stack(
-                                        spacing="xs",
+                                        gap="xs",
                                         children=[
                                             dmc.Button("System Backup", variant="light", size="sm", fullWidth=True),
                                             dmc.Button("Generate Report", variant="light", size="sm", fullWidth=True),
@@ -522,7 +535,7 @@ def update_notification_badge(log):
 )
 def update_notification_log_list(log):
     if not log:
-        return [dmc.Text("No notifications yet.", color="gray", size="sm")]
+        return [dmc.Text("No notifications yet.", c="gray", fz="sm")]
     items = []
     for n in reversed(log[-20:]):  # Show last 20 notifications, newest first
         color = {"success": "green", "warning": "yellow", "error": "red"}.get(n.get("type"), "gray")
@@ -530,10 +543,11 @@ def update_notification_log_list(log):
             dmc.Paper(
                 p="xs",
                 radius="md",
-                style={"background": "#23262f", "marginBottom": 4},
+                # style={"background": "#23262f", "marginBottom": 4}, # Let theme handle background
+                style={"marginBottom": 4},
                 children=[
-                    dmc.Text(n.get("message", ""), color=color, size="sm"),
-                    dmc.Text(n.get("timestamp", ""), color="gray", size="xs"),
+                    dmc.Text(n.get("message", ""), c=color, fz="sm"),
+                    dmc.Text(n.get("timestamp", ""), c="gray", fz="xs"),
                 ]
             )
         )
@@ -541,21 +555,27 @@ def update_notification_log_list(log):
 
 # No need for popover toggle callback with dmc.Menu; it handles open/close automatically.
 
-def dashboard_layout(show_sidebar=True, active_page="dashboard"):
+def dashboard_layout(page_content, show_sidebar=True, active_page="dashboard"):
     """Main dashboard layout function"""
-    return html.Div(
-        style={"display": "flex", "height": "100vh", "background": "#181A1B"},
-        children=[
-            create_navigation_sidebar(active_page),
-            html.Div(
-                style={"flex": 1, "display": "flex", "flexDirection": "column"},
-                children=[
-                    create_modern_topbar(),
-                    dmc.ScrollArea(
-                        create_main_dashboard_content(),
-                        style={"flex": 1, "padding": "20px", "marginLeft": "100px"}
-                    )
-                ]
-            )
-        ]
-    )
+    return dmc.AppShell(
+    [
+        create_modern_topbar(),
+        dmc.AppShellNavbar(
+            p="md",
+            children=[
+                create_navigation_sidebar(active_page)
+            ]
+        ),
+        dmc.AppShellMain(
+            children=page_content
+        )
+    ],
+    header={"height": 80},
+    padding="md",
+    navbar={
+        "width": 100,
+        "breakpoint": "sm",
+        "collapsed": {"mobile": True},
+    },
+    id="appshell",
+)

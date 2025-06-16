@@ -14,60 +14,77 @@ dbc_instance = DBcontoller()
 def create_step2_layout():
     """Create the layout for Step 2: Project Configuration"""
     return dmc.Stack(
-        spacing="md",
+        gap="md",
         children=[
             dmc.Alert(
-                "Asset created successfully! Now configure the project asset details.",
-                title="Step 1 Complete",
+                "Base asset record created! Now configure its project-specific details.", # Updated message
+                title="Step 1 Complete!",
                 color="green",
-                id="step2-success-alert",
-                style={"display": "none"}
+                id="step2-success-alert-new", # ID Updated
+                hide=True, # Initially hidden, shown by callback
+                withCloseButton=True
+                # children="" # Removed redundant children prop
             ),
             dmc.SimpleGrid(
                 cols=2,
                 spacing="md",
                 children=[
-                    dmc.Select(
+                    dmc.TextInput( # Added for Client Name display
+                        label="Client",
+                        id="step2-client-name-display-new", # New ID
+                        disabled=True,
+                        style={"width": "100%"}
+                    ),
+                    dmc.Select( # Project might still be selectable/confirmable here
                         label="Project",
-                        id="step2-project-dropdown",
-                        placeholder="Select project",
-                        data=[],
+                        id="step2-project-dropdown-new", # ID Updated
+                        placeholder="Confirm or select project",
+                        data=[], # To be populated by callback based on Step 1 client
                         required=True,
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Asset Name",
-                        id="step2-asset-name-display",
+                        id="step2-asset-name-display-new", # ID Updated
                         disabled=True,
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
                         label="Asset Type",
-                        id="step2-asset-type-display",
+                        id="step2-asset-type-display-new", # ID Updated
                         disabled=True,
                         style={"width": "100%"}
                     ),
                     dmc.TextInput(
-                        label="Asset ID",
-                        id="step2-asset-id-display",
+                        label="Asset ID (from tbl_asset)",
+                        id="step2-asset-id-display-new", # ID Updated
                         disabled=True,
                         style={"width": "100%"}
                     )
                 ]
             ),
             html.Div(
-                id="met-tower-pairing-section",
-                style={"display": "none"},
+                id="met-tower-pairing-section-new", # ID Updated
+                style={"display": "none"}, # Conditional visibility handled by callback
                 children=[
                     dmc.Select(
-                        label="Pair with Met Tower (Optional)",
-                        id="step2-met-tower-dropdown",
+                        label="Pair with Met Tower (Optional, if Lidar/Sodar)",
+                        id="step2-met-tower-dropdown-new", # ID Updated
                         placeholder="Select a Met Tower to pair with",
-                        data=[],
+                        data=[], # To be populated by callback
                         clearable=True,
                         style={"width": "100%"}
                     )
                 ]
+            ),
+            dmc.Alert(
+                id="step2-alert-message-new", # New alert for Step 2 errors
+                title="Input Error!",
+                color="red",
+                hide=True,
+                withCloseButton=True,
+                children="",
+                mt="md"
             )
         ]
     )

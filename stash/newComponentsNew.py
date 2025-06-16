@@ -1,5 +1,5 @@
 """
-Modern UI components module for the modernized Dash app.
+Modern UI components module for the modernized Dash app (New Version).
 
 Defines:
 - create_kpi_card(): Modern KPI card component
@@ -18,19 +18,18 @@ import plotly.express as px
 import pandas as pd
 from clientsDashboard import create_clients_dashboard_layout
 from projectsDashboard import create_projects_dashboard_layout
-from assetsDashboardNew import create_assets_dashboard_layout
+from assetsDashboardNew import create_assets_dashboard_layout  # Import from new assets dashboard
 
 def create_kpi_card(title, value, change, icon, color):
     """Create a modern KPI card component"""
     return dmc.Paper(
         radius="md",
         p="lg",
-        # style={
-        #     "background": "linear-gradient(135deg, #23262f 0%, #2a2d36 100%)", # Let theme handle
-        #     "border": "1px solid #3a3d46", # Let theme handle
-        #     "minHeight": "120px"
-        # },
-        style={"minHeight": "120px"}, # Keep minHeight
+        style={
+            "background": "linear-gradient(135deg, #23262f 0%, #2a2d36 100%)",
+            "border": "1px solid #3a3d46",
+            "minHeight": "120px"
+        },
         children=[
             dmc.Group(
                 justify="space-between",
@@ -39,8 +38,8 @@ def create_kpi_card(title, value, change, icon, color):
                     dmc.Stack(
                         gap="xs",
                         children=[
-                            dmc.Text(title, fz="sm", fw=500), # Removed c="dimmed"
-                            dmc.Text(value, fz="xl", fw=700), 
+                            dmc.Text(title, fz="sm", c="dimmed", fw=500),
+                            dmc.Text(value, fz="xl", fw=700, c="white"),
                             dmc.Group(
                                 gap="xs",
                                 children=[
@@ -67,14 +66,13 @@ def create_chart_card(title, chart_component):
     return dmc.Paper(
         radius="md",
         p="lg",
-        # style={
-        #     "background": "#23262f", # Let theme handle
-        #     "border": "1px solid #3a3d46", # Let theme handle
-        #     "minHeight": "300px"
-        # },
-        style={"minHeight": "300px"}, # Keep minHeight
+        style={
+            "background": "#23262f",
+            "border": "1px solid #3a3d46",
+            "minHeight": "300px"
+        },
         children=[
-            dmc.Text(title, fz="lg", fw=600, mb="md"), # Removed c="white"
+            dmc.Text(title, fz="lg", fw=600, c="white", mb="md"),
             chart_component
         ]
     )
@@ -94,8 +92,8 @@ def create_dashboard_overview():
         ).update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            # font_color='white', # Let theme handle
-            # title_font_color='white' # Let theme handle
+            font_color='white',
+            title_font_color='white'
         ),
         config={'displayModeBar': False},
         style={'height': '250px'}
@@ -114,8 +112,8 @@ def create_dashboard_overview():
         ).update_layout(
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            # font_color='white', # Let theme handle
-            # title_font_color='white' # Let theme handle
+            font_color='white',
+            title_font_color='white'
         ),
         config={'displayModeBar': False},
         style={'height': '250px'}
@@ -158,30 +156,30 @@ def create_dashboard_overview():
                         dmc.Paper(
                             radius="md",
                             p="lg",
-                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
+                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
                             children=[
-                                dmc.Text("Recent Activity", fz="lg", fw=600, mb="md"), # Removed c="white"
+                                dmc.Text("Recent Activity", fz="lg", fw=600, c="white", mb="md"),
                                 dmc.Stack(
                                     gap="sm",
                                     children=[
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("New MET tower deployed - Site 0779", fz="sm"), # Removed c="white"
+                                                dmc.Text("New MET tower deployed - Site 0779", fz="sm", c="white"),
                                                 dmc.Badge("2 hours ago", color="green", variant="light")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Data ingestion completed - Project Alpha", fz="sm"), # Removed c="white"
+                                                dmc.Text("Data ingestion completed - Project Alpha", fz="sm", c="white"),
                                                 dmc.Badge("4 hours ago", color="blue", variant="light")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Client onboarding - WindTech Solutions", fz="sm"), # Removed c="white"
+                                                dmc.Text("Client onboarding - WindTech Solutions", fz="sm", c="white"),
                                                 dmc.Badge("1 day ago", color="orange", variant="light")
                                             ]
                                         ),
@@ -195,37 +193,37 @@ def create_dashboard_overview():
                         dmc.Paper(
                             radius="md",
                             p="lg",
-                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
+                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
                             children=[
-                                dmc.Text("System Status", fz="lg", fw=600, mb="md"), # Removed c="white"
+                                dmc.Text("System Status", fz="lg", fw=600, c="white", mb="md"),
                                 dmc.Stack(
                                     gap="md",
                                     children=[
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Data Pipeline", fz="sm"), # Removed c="white"
+                                                dmc.Text("Data Pipeline", fz="sm", c="white"),
                                                 dmc.Badge("Operational", color="green")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Email Processing", fz="sm"), # Removed c="white"
+                                                dmc.Text("Email Processing", fz="sm", c="white"),
                                                 dmc.Badge("Operational", color="green")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Database", fz="sm"), # Removed c="white"
+                                                dmc.Text("Database", fz="sm", c="white"),
                                                 dmc.Badge("Operational", color="green")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("API Services", fz="sm"), # Removed c="white"
+                                                dmc.Text("API Services", fz="sm", c="white"),
                                                 dmc.Badge("Maintenance", color="yellow")
                                             ]
                                         ),
@@ -250,7 +248,7 @@ def create_projects_page():
 
 def create_assets_page():
     """Create the assets management page using the dedicated assets dashboard"""
-    return create_assets_dashboard_layout()
+    return create_assets_dashboard_layout()  # This now uses the new assets dashboard layout
 
 def create_admin_page():
     """Create the admin and overview page"""
@@ -259,7 +257,7 @@ def create_admin_page():
         px="xl",
         py="xl",
         children=[
-            dmc.Title("System Administration", order=2, mb="xl"), # Removed c="white"
+            dmc.Title("System Administration", order=2, c="white", mb="xl"),
             
             dmc.Grid(
                 gutter="xl",
@@ -268,30 +266,30 @@ def create_admin_page():
                         dmc.Paper(
                             radius="md",
                             p="lg",
-                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
+                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
                             children=[
-                                dmc.Text("User Management", fz="lg", fw=600, mb="md"), # Removed c="white"
+                                dmc.Text("User Management", fz="lg", fw=600, c="white", mb="md"),
                                 dmc.Stack(
                                     gap="sm",
                                     children=[
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Active Users", fz="sm"), # Removed c="white"
+                                                dmc.Text("Active Users", fz="sm", c="white"),
                                                 dmc.Text("24", fz="sm", fw=600, c="blue")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Admin Users", fz="sm"), # Removed c="white"
+                                                dmc.Text("Admin Users", fz="sm", c="white"),
                                                 dmc.Text("3", fz="sm", fw=600, c="orange")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Pending Invites", fz="sm"), # Removed c="white"
+                                                dmc.Text("Pending Invites", fz="sm", c="white"),
                                                 dmc.Text("2", fz="sm", fw=600, c="yellow")
                                             ]
                                         ),
@@ -306,30 +304,30 @@ def create_admin_page():
                         dmc.Paper(
                             radius="md",
                             p="lg",
-                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
+                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
                             children=[
-                                dmc.Text("System Health", fz="lg", fw=600, mb="md"), # Removed c="white"
+                                dmc.Text("System Health", fz="lg", fw=600, c="white", mb="md"),
                                 dmc.Stack(
                                     gap="sm",
                                     children=[
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("CPU Usage", fz="sm"), # Removed c="white"
+                                                dmc.Text("CPU Usage", fz="sm", c="white"),
                                                 dmc.Text("45%", fz="sm", fw=600, c="green")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Memory Usage", fz="sm"), # Removed c="white"
+                                                dmc.Text("Memory Usage", fz="sm", c="white"),
                                                 dmc.Text("62%", fz="sm", fw=600, c="yellow")
                                             ]
                                         ),
                                         dmc.Group(
                                             justify="space-between",
                                             children=[
-                                                dmc.Text("Disk Usage", fz="sm"), # Removed c="white"
+                                                dmc.Text("Disk Usage", fz="sm", c="white"),
                                                 dmc.Text("78%", fz="sm", fw=600, c="orange")
                                             ]
                                         ),
@@ -344,9 +342,9 @@ def create_admin_page():
                         dmc.Paper(
                             radius="md",
                             p="lg",
-                            # style={"background": "#23262f", "border": "1px solid #3a3d46"}, # Let theme handle
+                            style={"background": "#23262f", "border": "1px solid #3a3d46"},
                             children=[
-                                dmc.Text("Configuration", fz="lg", fw=600, mb="md"), # Removed c="white"
+                                dmc.Text("Configuration", fz="lg", fw=600, c="white", mb="md"),
                                 dmc.Stack(
                                     gap="sm",
                                     children=[

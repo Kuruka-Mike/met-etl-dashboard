@@ -15,11 +15,11 @@ dbc_instance = DBcontoller()
 def create_step1_layout():
     """Create the layout for Step 1: Basic Information"""
     return dmc.Stack(
-        spacing="md",
+        gap="md",
         children=[
             dmc.Select(
                 label="Client",
-                id="modern-asset-client-dropdown",
+                id="modern-asset-client-dropdown-new", # ID Updated
                 placeholder="Select a client",
                 data=[],  # Lazy loaded
                 required=True,
@@ -27,7 +27,7 @@ def create_step1_layout():
             ),
             dmc.Select(
                 label="Project",
-                id="modern-asset-project-dropdown",
+                id="modern-asset-project-dropdown-new", # ID Updated
                 placeholder="Select a project",
                 data=[],
                 required=True,
@@ -35,12 +35,12 @@ def create_step1_layout():
             ),
             dmc.Select(
                 label="Asset Type",
-                id="modern-asset-type-dropdown",
+                id="modern-asset-type-dropdown-new", # ID Updated
                 placeholder="Select asset type",
                 data=[
-                    {"label": "Development Met Tower", "value": 1},
-                    {"label": "Lidar", "value": 2},
-                    {"label": "Sodar", "value": 3}
+                    {"label": "Development Met Tower", "value": "1"},
+                    {"label": "Lidar", "value": "2"},
+                    {"label": "Sodar", "value": "3"}
                 ],
                 required=True,
                 style={"width": "100%"}
@@ -48,16 +48,25 @@ def create_step1_layout():
             dmc.TextInput(
                 label="Asset Name",
                 placeholder="Enter asset name",
-                id="modern-asset-name-input",
+                id="modern-asset-name-input-new", # ID Updated
                 required=True,
                 style={"width": "100%"}
             ),
+            dmc.Alert(
+                id="step1-alert-message-new",
+                title="Input Error!",
+                color="red",
+                hide=True,
+                withCloseButton=True,
+                children="",
+                mt="md"
+            )
         ]
     )
 
 @callback(
-    Output("modern-asset-project-dropdown", "data"),
-    Input("modern-asset-client-dropdown", "value"),
+    Output("modern-asset-project-dropdown-new", "data"), # ID Updated
+    Input("modern-asset-client-dropdown-new", "value"), # ID Updated
     prevent_initial_call=True,
 )
 def update_project_dropdown_step1(client_name):
@@ -76,24 +85,49 @@ def update_project_dropdown_step1(client_name):
         return []
 
 def validate_step1_data(client_name, project_name, asset_type_id, asset_name):
-    if not all([client_name, project_name, asset_type_id, asset_name]):
-        return False, "All fields are required."
-    if len(asset_name.strip()) < 2:
-        return False, "Asset name must be at least 2 characters long."
+    error_messages = []
+    if not client_name:
+        error_messages.append("Client selection is required.")
+    if not project_name:
+        error_messages.append("Project selection is required.")
+    if not asset_type_id:
+        error_messages.append("Asset type selection is required.")
+    if not asset_name:
+        error_messages.append("Asset name is required.")
+    elif len(asset_name.strip()) < 2:
+        error_messages.append("Asset name must be at least 2 characters long.")
+
+    if error_messages:
+        return False, " ".join(error_messages)
+
     # Uniqueness check within project (tbl_project_asset)
     try:
-        # Get ProjectID from project name and client name
         project_id = dbc_instance.getProjectIdByName(project_name, client_name)
-        if project_id:
-            # Query tbl_project_asset for this ProjectID and asset_name
-            from sqlalchemy import text
-            dal = dbc_instance.dal
-            engine = dal.dev_conn._engine
-            query = text("SELECT 1 FROM tbl_project_asset pa JOIN tbl_asset a ON pa.AssetID = a.AssetID WHERE pa.ProjectID = :project_id AND a.Name = :asset_name")
-            with engine.connect() as connection:
-                result = connection.execute(query, {"project_id": int(project_id), "asset_name": asset_name}).fetchone()
-                if result:
-                    return False, f"Asset '{asset_name}' already exists in project '{project_name}'. Please use a different name."
+        if project_id is None: # Project might not exist under that client, or name is wrong
+             return False, f"Project '{project_name}' not found for client '{client_name}'. Please check selection."
+
+        from sqlalchemy import text
+        dal = dbc_instance.dal
+        engine = dal.dev_conn._engine
+        # Check if asset name exists for this project_id
+        query_check = text("""
+            SELECT 1 FROM tbl_asset a
+            JOIN tbl_project_asset pa ON a.AssetID = pa.AssetID
+            WHERE a.Name = :asset_name AND pa.ProjectID = :project_id
+        """)
+        with engine.connect() as connection:
+            result = connection.execute(query_check, {"asset_name": asset_name, "project_id": project_id}).fetchone()
+            if result:
+                return False, f"Asset '{asset_name}' already exists in project '{project_name}'. Please use a different name."
     except Exception as e:
-        print(f"Error checking asset uniqueness in tbl_project_asset: {e}")
-    return True, "Valid"
+        print(f"Error checking asset uniqueness: {e}")
+        return False, "An error occurred while validating asset name. Please try again."
+
+    # If all checks pass
+    validated_data = {
+        "client_name": client_name,
+        "project_name": project_name,
+        "asset_type_id": asset_type_id,
+        "asset_name": asset_name.strip()
+    }
+    return True, validated_data
