@@ -14,7 +14,7 @@ import dash
 import dash_mantine_components as dmc
 from dash import html, dcc, Output, Input, callback
 from dashboardLayout import dashboard_layout, create_navigation_sidebar, create_modern_topbar, create_main_dashboard_content
-from newComponentsNew import (  # Import from new components module
+from stash.newComponentsNew import (  # Import from new components module
     create_dashboard_overview,
     create_clients_page,
     create_projects_page,
