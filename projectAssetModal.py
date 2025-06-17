@@ -31,7 +31,7 @@ def create_project_asset_modal():
                         justify="center",
                         mb="md",
                         children=[
-                            dmc.Badge("Step 2 of 3", color="blue", size="lg")
+                            dmc.Badge("Step 2 of 4", color="blue", size="lg")
                         ]
                     ),
                     
@@ -85,7 +85,7 @@ def create_project_asset_modal():
                                 "Next",
                                 id="next-to-coordinates-btn",
                                 color="green",
-                                disabled=False
+                                disabled=True
                             )
                         ]
                     )
@@ -141,16 +141,15 @@ def update_paired_assets_dropdown(project_name, asset_type_id):
     Output("project-asset-modal", "opened"),
     [Input("next-to-project-asset-btn", "n_clicks"),
      Input("back-to-asset-btn", "n_clicks"),
-     Input("save-project-asset-btn", "n_clicks"),
      Input("next-to-coordinates-btn", "n_clicks")],
     [State("project-asset-modal", "opened")],
     prevent_initial_call=True
 )
-def toggle_project_asset_modal(next_clicks, back_clicks, save_clicks, next_to_coord_clicks, is_open):
+def toggle_project_asset_modal(next_clicks, back_clicks, next_to_coord_clicks, is_open):
     from dash import ctx
     if ctx.triggered_id == "next-to-project-asset-btn":
         return True
-    elif ctx.triggered_id in ["back-to-asset-btn", "save-project-asset-btn", "next-to-coordinates-btn"]:
+    elif ctx.triggered_id in ["back-to-asset-btn", "next-to-coordinates-btn"]:
         return False
     return is_open
 
@@ -243,7 +242,9 @@ def get_project_asset_data(project_asset_id):
      Output("asset-id-input", "value", allow_duplicate=True),
      Output("pair-project-asset-dropdown", "value", allow_duplicate=True),
      Output("project-asset-notification-store", "data", allow_duplicate=True),
-     Output("assets-dashboard-refresh-trigger-new", "data", allow_duplicate=True)],
+     Output("assets-dashboard-refresh-trigger-new", "data", allow_duplicate=True),
+     Output("save-project-asset-btn", "disabled", allow_duplicate=True),
+     Output("next-to-coordinates-btn", "disabled", allow_duplicate=True)],
     [Input("save-project-asset-btn", "n_clicks")],
     [State("project-asset-id-input", "value"),
      State("project-id-input", "value"),
@@ -324,8 +325,8 @@ def save_project_asset_details(
             "icon": "✅"
         }
         
-        # Clear all fields
-        return "", "", "", "", "", "", "", notification, (refresh_trigger or 0) + 1
+        # Clear all fields and update button states
+        return "", "", "", "", "", "", "", notification, (refresh_trigger or 0) + 1, True, False
     
     except Exception as e:
         print(f"Error saving project asset details: {e}")
@@ -337,8 +338,8 @@ def save_project_asset_details(
             "icon": "❌"
         }
         
-        # Keep the entered values
-        return project_asset_id, project_id, project_name, asset_name, asset_type_id, asset_id, pair_project_asset_id, notification, refresh_trigger
+        # Keep the entered values and button states
+        return project_asset_id, project_id, project_name, asset_name, asset_type_id, asset_id, pair_project_asset_id, notification, refresh_trigger, False, True
 
 # Callback to show notifications
 @callback(

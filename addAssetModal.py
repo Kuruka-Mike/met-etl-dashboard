@@ -75,7 +75,7 @@ def create_add_asset_modal():
                         justify="center",
                         mb="md",
                         children=[
-                            dmc.Badge("Step 1 of 2", color="blue", size="lg")
+                            dmc.Badge("Step 1 of 4", color="blue", size="lg")
                         ]
                     ),
                     

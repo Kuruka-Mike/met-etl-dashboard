@@ -15,6 +15,7 @@ from DBcontroller import DBcontoller
 from addAssetModal import create_add_asset_modal
 from projectAssetModal import create_project_asset_modal
 from projectAssetDetailModal import create_project_asset_detail_modal
+from ingestConfigModal import create_ingest_config_modal
 
 
 dbc_instance = DBcontoller()
@@ -226,6 +227,7 @@ def create_assets_dashboard_layout():
             create_add_asset_modal(),
             create_project_asset_modal(),
             create_project_asset_detail_modal(),
+            create_ingest_config_modal(),
         ]
     )
 

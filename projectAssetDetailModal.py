@@ -31,7 +31,7 @@ def create_project_asset_detail_modal():
                         justify="center",
                         mb="md",
                         children=[
-                            dmc.Badge("Step 3 of 3", color="blue", size="lg")
+                            dmc.Badge("Step 3 of 4", color="blue", size="lg")
                         ]
                     ),
                     
@@ -99,6 +99,12 @@ def create_project_asset_detail_modal():
                                 "Save",
                                 id="save-coordinates-btn",
                                 color="blue"
+                            ),
+                            dmc.Button(
+                                "Next",
+                                id="next-to-ingest-btn",
+                                color="green",
+                                disabled=True
                             )
                         ]
                     )
@@ -113,15 +119,15 @@ def create_project_asset_detail_modal():
     Output("project-asset-detail-modal", "opened"),
     [Input("next-to-coordinates-btn", "n_clicks"),
      Input("back-to-pairing-btn", "n_clicks"),
-     Input("save-coordinates-btn", "n_clicks")],
+     Input("next-to-ingest-btn", "n_clicks")],
     [State("project-asset-detail-modal", "opened")],
     prevent_initial_call=True
 )
-def toggle_coordinates_modal(next_clicks, back_clicks, save_clicks, is_open):
+def toggle_coordinates_modal(next_clicks, back_clicks, next_to_ingest_clicks, is_open):
     from dash import ctx
     if ctx.triggered_id == "next-to-coordinates-btn":
         return True
-    elif ctx.triggered_id in ["back-to-pairing-btn", "save-coordinates-btn"]:
+    elif ctx.triggered_id in ["back-to-pairing-btn", "next-to-ingest-btn"]:
         return False
     return is_open
 
@@ -143,6 +149,19 @@ def handle_back_button(n_clicks, asset_type_id):
     
     # For Lidar/Sodar (type 2/3), go back to Step 2
     return True, False
+
+# Callback to reset button states in the pairing modal when it's opened
+@callback(
+    [Output("save-project-asset-btn", "disabled", allow_duplicate=True),
+     Output("next-to-coordinates-btn", "disabled", allow_duplicate=True)],
+    [Input("project-asset-modal", "opened")],
+    prevent_initial_call=True
+)
+def reset_pairing_button_states(is_open):
+    if is_open:
+        # Enable Save button, disable Next button
+        return False, True
+    return no_update, no_update
 
 # Callback to load asset name when the modal is opened
 @callback(
@@ -209,7 +228,9 @@ def get_project_asset_data(project_asset_id):
      Output("longitude-input", "value"),
      Output("elevation-input", "value"),
      Output("coordinates-notification-store", "data"),
-     Output("assets-dashboard-refresh-trigger-new", "data", allow_duplicate=True)],
+     Output("assets-dashboard-refresh-trigger-new", "data", allow_duplicate=True),
+     Output("save-coordinates-btn", "disabled", allow_duplicate=True),
+     Output("next-to-ingest-btn", "disabled", allow_duplicate=True)],
     [Input("save-coordinates-btn", "n_clicks")],
     [State("detail-project-asset-id-input", "value"),
      State("latitude-input", "value"),
@@ -271,8 +292,8 @@ def save_coordinates(n_clicks, project_asset_id, latitude, longitude, elevation,
             "icon": "✅"
         }
         
-        # Clear all fields
-        return None, None, None, notification, (refresh_trigger or 0) + 1
+        # Clear all fields and update button states
+        return None, None, None, notification, (refresh_trigger or 0) + 1, True, False
     
     except Exception as e:
         print(f"Error saving coordinates: {e}")
@@ -284,8 +305,8 @@ def save_coordinates(n_clicks, project_asset_id, latitude, longitude, elevation,
             "icon": "❌"
         }
         
-        # Keep the entered values
-        return latitude, longitude, elevation, notification, refresh_trigger
+        # Keep the entered values and button states
+        return latitude, longitude, elevation, notification, refresh_trigger, False, True
 
 # Callback to show notifications
 @callback(
