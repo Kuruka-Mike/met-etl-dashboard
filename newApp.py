@@ -21,7 +21,6 @@ from newComponents import (
     create_assets_page,
     create_admin_page
 )
-import addProjectModal
 
 # Initialize the Dash app with enterprise-ready configuration
 app = dash.Dash(
@@ -32,13 +31,6 @@ app = dash.Dash(
     update_title="Loading...",
 )
 
-# Clientside callback for Mantine notifications
-app.clientside_callback(
-    "window.dash_clientside.clients_notification.show",
-    Output("notification-container", "sendNotifications", allow_duplicate=True),
-    Input("add-asset-notification-store", "data"),
-    prevent_initial_call=True
-)
 
 # Clientside callback for theme switching
 app.clientside_callback(
@@ -64,6 +56,7 @@ app.layout = dmc.MantineProvider(
         "primaryColor": "blue",
         "fontFamily": "Inter, sans-serif",
     },
+    forceColorScheme="dark",
     children=[
         dmc.NotificationContainer(
             id="notification-container",
@@ -101,6 +94,6 @@ def display_page(pathname):
     else:
         return dashboard_layout(create_main_dashboard_content(), active_page="dashboard")
 
-# Callbacks are registered automatically by importing the modules
+
 if __name__ == "__main__":
     app.run_server(debug=True, port=8051)

@@ -132,8 +132,7 @@ class DBcontoller(object):
     def getAssetTypes(self):
         df = self.dal.get_asset_types()
         if not df.empty:
-            # Format for Dash dropdown: [{'label': 'AssetType Name [AssetTypeId]', 'value': AssetTypeId}, ...]
-            return [{'label': f"{row['AssetType']} [{row['AssetTypeId']}]", 'value': row['AssetTypeId']} for index, row in df.iterrows()]
+            return [{'label': row['AssetType'], 'value': str(row['AssetTypeId'])} for index, row in df.iterrows()]
         return []
 
     def isBaseSenderConfigured(self, entered_base_sender: str) -> bool:
@@ -317,6 +316,68 @@ class DBcontoller(object):
             matching_projects = df_projects[df_projects['Name'] == project_name]
             if not matching_projects.empty:
                 return matching_projects.iloc[0]['ProjectID']
+            return None
+            
+    def getProjectById(self, project_id: int) -> dict:
+        """
+        Get project information by project ID.
+        
+        Args:
+            project_id (int): The ID of the project
+            
+        Returns:
+            dict: Project information including client name and project name, or None if not found
+        """
+        try:
+            # Get project information from database
+            df_project = self.dal.get_project_by_id(project_id)
+            if df_project is not None and not df_project.empty:
+                # Convert DataFrame row to dictionary
+                project_info = df_project.iloc[0].to_dict()
+                return project_info
+            return None
+        except Exception as e:
+            print(f"Error getting project by ID {project_id}: {e}")
+            return None
+            
+    def getProjectAssetByAssetAndProject(self, asset_id: int, project_id: int) -> dict:
+        """
+        Get project asset information by asset ID and project ID.
+        
+        Args:
+            asset_id (int): The ID of the asset
+            project_id (int): The ID of the project
+            
+        Returns:
+            dict: Project asset information including project_asset_id, or None if not found
+        """
+        try:
+            # Query to get the project asset record
+            query = f"""
+                SELECT TOP 1 pa.ProjectAssetID, pa.Name, pa.AssetTypeID, c.Name as ClientName, p.Name as ProjectName
+                FROM tbl_project_asset pa
+                JOIN tbl_project p ON pa.ProjectID = p.ProjectID
+                JOIN tbl_client c ON p.ClientID = c.ClientID
+                WHERE pa.AssetID = {asset_id} AND pa.ProjectID = {project_id}
+                ORDER BY pa.ProjectAssetID DESC
+            """
+            
+            # Execute the query
+            result = self.dal.cnn.execute(query).fetchone()
+            
+            if result:
+                # Convert the result to a dictionary
+                project_asset_info = {
+                    "project_asset_id": result.ProjectAssetID,
+                    "asset_name": result.Name,
+                    "asset_type_id": result.AssetTypeID,
+                    "client_name": result.ClientName,
+                    "project_name": result.ProjectName
+                }
+                return project_asset_info
+            return None
+        except Exception as e:
+            print(f"Error getting project asset by asset ID {asset_id} and project ID {project_id}: {e}")
             return None
 
 

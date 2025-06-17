@@ -207,7 +207,6 @@ def update_projects_dashboard(refresh_trigger):
                                         children=[
                                             dmc.Button("View", size="xs", variant="light", color="blue"),
                                             dmc.Button("Edit", size="xs", variant="outline", color="gray"),
-                                            dmc.Button("Add Asset", size="xs", variant="outline", color="green"),
                                         ]
                                     )
                                     # style={"padding": "4px"} # Padding handled by dmc.Table spacing or CSS

@@ -148,6 +148,30 @@ class DataAccessLayer:
             query = text("SELECT ProjectID, Name FROM tbl_project WHERE ClientID = :client_id ORDER BY Name")
             project_list_frame = pd.read_sql(query, con=engine, params={"client_id": clientID})
         return project_list_frame
+        
+    def get_project_by_id(self, project_id: int) -> pd.DataFrame:
+        """
+        Get project information by project ID.
+        
+        Args:
+            project_id (int): The ID of the project
+            
+        Returns:
+            pd.DataFrame: DataFrame with project information including client name and project name
+        """
+        engine = self.dev_conn._engine
+        query = text("""
+            SELECT p.ProjectID, p.Name AS ProjectName, c.Name AS ClientName, c.ClientID
+            FROM tbl_project p
+            JOIN tbl_client c ON p.ClientID = c.ClientID
+            WHERE p.ProjectID = :project_id
+        """)
+        try:
+            project_df = pd.read_sql(query, con=engine, params={"project_id": project_id})
+            return project_df
+        except Exception as e:
+            print(f"Error getting project by ID {project_id}: {e}")
+            return pd.DataFrame()  # Return empty DataFrame on error
 
     def add_project(self, project_name, clientID):
         # Check if the project already exists

@@ -10,9 +10,12 @@ Responsibilities:
 
 import dash
 import dash_mantine_components as dmc
-from dash import html, dcc, callback, Output, Input, State
+from dash import html, dcc, callback, Output, Input, State, no_update
 from DBcontroller import DBcontoller
-from addNewAssetModalNew import create_add_asset_modal
+from addAssetModal import create_add_asset_modal
+from projectAssetModal import create_project_asset_modal
+from projectAssetDetailModal import create_project_asset_detail_modal
+
 
 dbc_instance = DBcontoller()
 
@@ -25,7 +28,7 @@ def create_asset_metrics_card(title, value):
             "background": "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
             "border": "1px solid #3a3d46",
             "width": "180px",
-            "height": "180px",
+            "height": "200px",  # Increased to match quick actions card
             "color": "white",
             "display": "flex",
             "alignItems": "center",
@@ -50,31 +53,38 @@ def create_asset_actions_card():
         radius="md",
         p="lg",
         style={
-            # "background": "#23262f", # Let theme handle
-            # "border": "1px solid #3a3d46", # Let theme handle
             "width": "250px",
-            "height": "180px",
+            "height": "200px",  # Increased height to fit all buttons
         },
         children=[
             dmc.Stack(
-                gap="sm",
+                gap="xs",  # Reduced gap between elements
                 children=[
-                    dmc.Text("Quick Actions", fz="md", fw=600, mb="xs"), # Removed c="white"
+                    dmc.Text("Quick Actions", fz="md", fw=600, mb="0"),
                     dmc.Button(
                         "Add New Asset",
-                        id="quick-add-asset-btn-new",  # Changed ID to avoid conflicts
+                        id="add-asset-btn-v2",
                         leftSection="➕",
                         color="blue",
-                        size="sm",
+                        size="sm",  # Back to original size
+                        fullWidth=True
+                    ),
+                    dmc.Button(
+                        "Move Lidar",
+                        id="move-lidar-btn-new",
+                        leftSection="↔️",
+                        color="gray",
+                        variant="light",
+                        size="sm",  # Back to original size
                         fullWidth=True
                     ),
                     dmc.Button(
                         "Refresh Data",
-                        id="refresh-assets-btn-new",  # Changed ID to avoid conflicts
+                        id="refresh-assets-btn-new",
                         leftSection="🔄",
                         color="gray",
                         variant="light",
-                        size="sm",
+                        size="sm",  # Back to original size
                         fullWidth=True
                     )
                 ]
@@ -95,14 +105,8 @@ def create_asset_table_for_project(assets_data, project_id):
                     gap="md",
                     align="center",
                     children=[
-                        dmc.Text("No assets found", fz="lg", fw=600), # Removed c="white"
-                        dmc.Text("Get started by adding your first asset to this project", fz="sm", c="dimmed"),
-                        dmc.Button(
-                            "Add First Asset",
-                            id=f"add-first-asset-btn-{project_id}",  # Using string ID instead of pattern-matching
-                            color="blue",
-                            size="md"
-                        )
+                        dmc.Text("No assets found", fz="lg", fw=600),
+                        dmc.Text("There are no assets associated with this project.", fz="sm", c="dimmed"),
                     ]
                 )
             ]
@@ -185,9 +189,8 @@ def create_assets_dashboard_layout():
     return html.Div(
         style={"padding": "20px", "maxWidth": "1200px", "margin": "0 auto"},
         children=[
-            # Add the new asset modal
-            create_add_asset_modal(),
-            dcc.Store(id="assets-dashboard-refresh-trigger-new", data=0),  # Changed ID to avoid conflicts
+            dcc.Store(id="assets-dashboard-refresh-trigger-new", data=0),
+            dcc.Store(id="current-project-asset-id-store", data=None),
             
             # Header Section
             dmc.Stack(
@@ -218,6 +221,11 @@ def create_assets_dashboard_layout():
             
             # Notification area
             html.Div(id="assets-notification-area-new"),  # Changed ID to avoid conflicts
+            
+            # Add the modals
+            create_add_asset_modal(),
+            create_project_asset_modal(),
+            create_project_asset_detail_modal(),
         ]
     )
 
@@ -326,14 +334,8 @@ def create_client_project_asset_cards(assets_data):
                     gap="md",
                     align="center",
                     children=[
-                        dmc.Text("No assets found", fz="lg", fw=600), # Removed c="white"
-                        dmc.Text("Get started by adding your first asset", fz="sm", c="dimmed"),
-                        dmc.Button(
-                            "Add First Asset",
-                            id="add-first-asset-global-btn-new",  # Changed ID to avoid conflicts
-                            color="blue",
-                            size="md"
-                        )
+                        dmc.Text("No assets found", fz="lg", fw=600),
+                        dmc.Text("There are no assets in the system.", fz="sm", c="dimmed"),
                     ]
                 )
             ]
@@ -363,15 +365,6 @@ def create_client_project_asset_cards(assets_data):
                                     dmc.Title(client_name, order=4, c="blue.5"),
                                     dmc.Text(f"{project_name} ({asset_count} assets)", fz="md", fw=600) # Removed c="white"
                                 ]
-                            ),
-                            # Using a Button instead of ActionIcon with Tooltip to avoid potential issues
-                            dmc.Button(
-                                "Add Asset",
-                                id=f"add-asset-to-project-btn-{project_id}",  # Using string ID instead of pattern-matching
-                                leftSection="➕",
-                                variant="light",
-                                color="blue",
-                                size="sm"
                             )
                         ]
                     ),
@@ -382,26 +375,4 @@ def create_client_project_asset_cards(assets_data):
     
     return dmc.Stack(gap="xl", children=cards)
 
-# Temporarily disabled callbacks for add asset modal
-# # Add callback for the "Add Asset" button
-# @callback(
-#     Output("modern-add-asset-modal", "opened", allow_duplicate=True),
-#     [Input("quick-add-asset-btn-new", "n_clicks"),
-#      Input("add-first-asset-global-btn-new", "n_clicks")],
-#     prevent_initial_call=True
-# )
-# def open_add_asset_modal_new(quick_btn_clicks, global_btn_clicks):
-#     if quick_btn_clicks or global_btn_clicks:
-#         return True
-#     return dash.no_update
-
-# # Add callback for project-specific "Add Asset" buttons and "Add First Asset" buttons
-# @callback(
-#     Output("modern-add-asset-modal", "opened", allow_duplicate=True),
-#     [Input(f"add-asset-to-project-btn-{project_id}", "n_clicks") for project_id in [f"project-{i}" for i in range(1, 65)]],
-#     prevent_initial_call=True
-# )
-# def open_add_asset_modal_from_project_new(*btn_clicks):
-#     if any(clicks for clicks in btn_clicks if clicks):
-#         return True
-#     return dash.no_update
+# The callback for toggling the asset modal is now handled in addAssetModal.py
